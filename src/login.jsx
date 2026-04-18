@@ -223,7 +223,7 @@ export default function Login() {
         <p className="text-center text-gray-400 mt-6 text-sm">
           Don’t have an account?{" "}
           <span
-            className="text-yellow-400 cursor-pointer hover:underline"
+            className="text-yellow-400 cursor-pointer hover:underline  mr-8 "
             onClick={() => {
               navigate("/signup");
             }}
