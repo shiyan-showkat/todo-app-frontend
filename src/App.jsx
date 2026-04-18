@@ -1,13 +1,3 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-
-import Signup from "./signup.jsx";
-import Login from "./login.jsx";
-import Todos from "./todo.jsx";
-
-const API = "https://todo-app-backend-gfh3.onrender.com";
-
-/* 🔥 HOME REDIRECT COMPONENT */
 function HomeRedirect() {
   const [loading, setLoading] = useState(true);
   const [auth, setAuth] = useState(false);
@@ -19,7 +9,13 @@ function HomeRedirect() {
           credentials: "include",
         });
 
-        setAuth(res.ok);
+        const data = await res.json().catch(() => null);
+
+        if (res.ok && data?.loggedIn) {
+          setAuth(true);
+        } else {
+          setAuth(false);
+        }
       } catch {
         setAuth(false);
       } finally {
@@ -30,13 +26,12 @@ function HomeRedirect() {
     checkLogin();
   }, []);
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="text-white flex justify-center items-center h-screen">
+      <div className="text-white h-screen flex items-center justify-center">
         Loading...
       </div>
     );
-  }
 
   return auth ? (
     <Navigate to="/todos" replace />
@@ -44,17 +39,3 @@ function HomeRedirect() {
     <Navigate to="/signup" replace />
   );
 }
-
-/* 🔥 MAIN APP */
-function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<HomeRedirect />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/todos" element={<Todos />} />
-    </Routes>
-  );
-}
-
-export default App;
