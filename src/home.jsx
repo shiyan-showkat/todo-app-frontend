@@ -8,8 +8,8 @@ function Home() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API}/api/v1/todos`, {
-          method: "POST",
+        const res = await fetch(`${API}/api/v1/me`, {
+          method: "GET",
           credentials: "include",
         });
 
