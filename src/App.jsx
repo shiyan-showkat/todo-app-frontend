@@ -15,7 +15,7 @@ function HomeRedirect() {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const res = await fetch(`${API}/api/v1/gettodos`, {
+        const res = await fetch(`${API}/api/v1/me`, {
           credentials: "include",
         });
 
@@ -30,9 +30,19 @@ function HomeRedirect() {
     checkLogin();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="text-white flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  }
 
-  return auth ? <Navigate to="/todos" /> : <Navigate to="/signup" />;
+  return auth ? (
+    <Navigate to="/todos" replace />
+  ) : (
+    <Navigate to="/signup" replace />
+  );
 }
 
 /* 🔥 MAIN APP */
