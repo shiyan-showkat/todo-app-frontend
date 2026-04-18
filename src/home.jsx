@@ -9,7 +9,6 @@ function Home() {
     const checkAuth = async () => {
       try {
         const res = await fetch(`${API}/api/v1/me`, {
-          method: "GET",
           credentials: "include",
         });
 
@@ -18,16 +17,16 @@ function Home() {
         } else {
           navigate("/login");
         }
-      } catch (err) {
+      } catch {
         navigate("/login");
       }
     };
 
     checkAuth();
-  }, []);
+  }, [navigate]);
 
   return (
-    <div className="text-white flex justify-center items-center h-screen">
+    <div className="h-screen flex items-center justify-center text-white">
       Loading...
     </div>
   );
