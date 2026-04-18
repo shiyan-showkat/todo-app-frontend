@@ -11,7 +11,7 @@ const API = "https://todo-app-backend-gfh3.onrender.com";
 function App() {
   return (
     <Routes>
-      {/* <Route path="/" element={<HomeRedirect />} /> */}
+      <Route path="/" element={<Navigate to="/signup" />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/todos" element={<Todos />} />
