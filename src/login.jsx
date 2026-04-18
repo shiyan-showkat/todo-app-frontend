@@ -45,7 +45,6 @@ export default function Login() {
 
       if (!res.ok) {
         setError(data.message);
-        setTimeout(() => navigate("/signup"), 1200);
       } else {
         setMessage(data.message);
         navigate("/todos");
@@ -220,6 +219,18 @@ export default function Login() {
             "Login"
           )}
         </button>
+        {/* SIGNUP LINK */}
+        <p className="text-center text-gray-400 mt-6 text-sm">
+          Don’t have an account?{" "}
+          <span
+            className="text-yellow-400 cursor-pointer hover:underline"
+            onClick={() => {
+              navigate("/signup");
+            }}
+          >
+            Signup
+          </span>
+        </p>
 
         <p
           onClick={() => setShowForgot(true)}

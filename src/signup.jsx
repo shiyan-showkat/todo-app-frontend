@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import App from "./App";
 
 export default function Signup() {
   const API = "https://todo-app-backend-gfh3.onrender.com";
@@ -40,6 +39,7 @@ export default function Signup() {
 
       if (!res.ok) {
         setError(data.message);
+        navigate("/todos");
       } else {
         setMessage(data.message);
         setStep("otp");
