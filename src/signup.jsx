@@ -39,9 +39,9 @@ export default function Signup() {
 
       if (!res.ok) {
         setError(data.message);
-        navigate("/todos");
       } else {
         setMessage(data.message);
+        // navigate("/todos");
         setStep("otp");
       }
     } catch {
@@ -87,7 +87,7 @@ export default function Signup() {
         setMessage("Account Verified ✅");
 
         setTimeout(() => {
-          navigate("/login");
+          navigate("/todos");
         }, 1200);
       }
     } catch {
