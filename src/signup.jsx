@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import App from "./App";
 
 export default function Signup() {
   const API = "https://todo-app-backend-gfh3.onrender.com";
+  const api = "http://localhost:7777";
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
