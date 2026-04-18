@@ -11,6 +11,7 @@ export default function Todos() {
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // 🔥 FETCH TODOS (with refresh handling)
   const fetchTodos = async () => {
     try {
       setLoading(true);
@@ -19,17 +20,20 @@ export default function Todos() {
         credentials: "include",
       });
 
+      // 🔴 token expired → try refresh
       if (res.status === 401) {
         const refreshRes = await fetch(`${API}/api/v1/newrefreshtoken`, {
           method: "POST",
           credentials: "include",
         });
 
+        // ❌ refresh failed → login
         if (!refreshRes.ok) {
           navigate("/login");
           return;
         }
 
+        // retry todos
         res = await fetch(`${API}/api/v1/gettodos`, {
           credentials: "include",
         });
@@ -39,6 +43,7 @@ export default function Todos() {
       setTodos(data.gettodos || []);
     } catch (err) {
       console.log(err);
+      navigate("/login");
     } finally {
       setLoading(false);
     }
@@ -48,6 +53,7 @@ export default function Todos() {
     fetchTodos();
   }, []);
 
+  // ➕ ADD / UPDATE TODO
   const handleAdd = async () => {
     if (!text.trim()) return;
 
@@ -70,6 +76,7 @@ export default function Todos() {
     setLoading(false);
   };
 
+  // 🗑 DELETE TODO
   const handleDelete = async (id) => {
     setLoading(true);
 
@@ -82,6 +89,7 @@ export default function Todos() {
     setLoading(false);
   };
 
+  // 🚪 LOGOUT
   const handleLogout = async () => {
     await fetch(`${API}/api/v1/logout`, {
       method: "POST",
@@ -93,7 +101,7 @@ export default function Todos() {
 
   return (
     <div className="min-h-screen relative bg-black text-white overflow-hidden">
-      {/* 🔥 BIG BACKGROUND TEXT */}
+      {/* BACKGROUND TEXT */}
       <div className="absolute inset-0 flex items-center justify-center">
         <h1 className="text-[120px] md:text-[180px] font-extrabold tracking-widest text-white/5 select-none">
           SHIYAN
@@ -114,7 +122,7 @@ export default function Todos() {
         </button>
       </div>
 
-      {/* MAIN CARD */}
+      {/* MAIN */}
       <div className="relative z-10 flex justify-center mt-10 px-4">
         <div className="w-full max-w-md bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-xl shadow-2xl">
           <h2 className="text-center text-lg mb-6 text-gray-300 font-semibold">
