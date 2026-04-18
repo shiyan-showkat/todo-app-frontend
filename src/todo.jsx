@@ -11,53 +11,34 @@ export default function Todos() {
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 🔥 FETCH USER + TODOS (REFRESH TOKEN HANDLED)
+  // 🔥 FETCH TODOS (with refresh handling)
   const fetchTodos = async () => {
     try {
       setLoading(true);
 
-      // 1️⃣ check user session
-      let meRes = await fetch(`${API}/api/v1/me`, {
-        method: "GET",
+      let res = await fetch(`${API}/api/v1/gettodos`, {
         credentials: "include",
       });
 
-      // 2️⃣ access token expired → refresh
-      if (meRes.status === 401) {
+      if (res.status === 401) {
         const refreshRes = await fetch(`${API}/api/v1/newrefreshtoken`, {
           method: "POST",
           credentials: "include",
         });
 
+        // ❌ refresh failed → login
         if (!refreshRes.ok) {
           navigate("/login");
           return;
         }
 
-        // retry /me
-        meRes = await fetch(`${API}/api/v1/me`, {
-          method: "GET",
+        // retry todos
+        res = await fetch(`${API}/api/v1/gettodos`, {
           credentials: "include",
         });
       }
 
-      if (!meRes.ok) {
-        navigate("/login");
-        return;
-      }
-
-      // 3️⃣ fetch todos
-      const todoRes = await fetch(`${API}/api/v1/gettodos`, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (todoRes.status === 401) {
-        navigate("/login");
-        return;
-      }
-
-      const data = await todoRes.json();
+      const data = await res.json();
       setTodos(data.gettodos || []);
     } catch (err) {
       console.log(err);
@@ -119,7 +100,7 @@ export default function Todos() {
 
   return (
     <div className="min-h-screen relative bg-black text-white overflow-hidden">
-      {/* BACKGROUND */}
+      {/* BACKGROUND TEXT */}
       <div className="absolute inset-0 flex items-center justify-center">
         <h1 className="text-[120px] md:text-[180px] font-extrabold tracking-widest text-white/5 select-none">
           SHIYAN
@@ -134,7 +115,7 @@ export default function Todos() {
 
         <button
           onClick={handleLogout}
-          className="px-4 py-2 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-300 text-sm"
+          className="px-4 py-2 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-300 text-sm cursor-pointer transition"
         >
           Logout
         </button>
@@ -152,13 +133,13 @@ export default function Todos() {
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="flex-1 p-3 rounded-xl bg-black/60 border border-white/10 outline-none focus:border-pink-500"
+              className="flex-1 p-3 rounded-xl bg-black/60 border border-white/10 outline-none focus:border-pink-500 cursor-text transition"
               placeholder="Write your task..."
             />
 
             <button
               onClick={handleAdd}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-400 text-black font-bold"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-400 text-black font-bold cursor-pointer hover:scale-105 transition"
             >
               {editId ? "Update ✨" : "Add ➕"}
             </button>
@@ -171,14 +152,14 @@ export default function Todos() {
             </p>
           )}
 
-          {/* TODOS */}
+          {/* LIST */}
           <div className="mt-6 space-y-3">
             {todos.map((t) => (
               <div
                 key={t._id}
-                className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10"
+                className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
               >
-                <span>{t.text}</span>
+                <span className="text-gray-200">{t.text}</span>
 
                 <div className="flex gap-2">
                   <button
@@ -186,14 +167,14 @@ export default function Todos() {
                       setText(t.text);
                       setEditId(t._id);
                     }}
-                    className="text-blue-300 text-xs"
+                    className="px-3 py-1 text-xs rounded-full bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 cursor-pointer"
                   >
                     Edit ✏️
                   </button>
 
                   <button
                     onClick={() => handleDelete(t._id)}
-                    className="text-red-300 text-xs"
+                    className="px-3 py-1 text-xs rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-300 cursor-pointer"
                   >
                     Delete 🗑️
                   </button>
@@ -202,10 +183,17 @@ export default function Todos() {
             ))}
           </div>
 
+          {/* EMPTY */}
           {!loading && todos.length === 0 && (
             <p className="text-center mt-6 text-gray-500">No tasks yet 🚀</p>
           )}
         </div>
+      </div>
+
+      {/* FOOTER */}
+      <div className="relative z-10 text-center mt-10 mb-6 text-gray-400 text-sm">
+        Built with ❤️ by <span className="text-pink-400 font-bold">Shiyan</span>{" "}
+        • MERN Developer
       </div>
     </div>
   );
