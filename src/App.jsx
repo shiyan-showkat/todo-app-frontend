@@ -7,7 +7,7 @@ import Todos from "./todo.jsx";
 
 const API = "https://todo-app-backend-gfh3.onrender.com";
 
-/* 🔥 HOME REDIRECT */
+/* 🔥 HOME REDIRECT (AUTH CHECK) */
 function HomeRedirect() {
   const [loading, setLoading] = useState(true);
   const [auth, setAuth] = useState(false);
@@ -15,7 +15,7 @@ function HomeRedirect() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API}/api/v1/gettodos`, {
+        const res = await fetch(`${API}/api/v1/me`, {
           credentials: "include",
         });
 
@@ -45,7 +45,7 @@ function HomeRedirect() {
   );
 }
 
-/* 🔥 APP */
+/* 🔥 MAIN APP */
 function App() {
   return (
     <Routes>
