@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import Signup from "./signup.jsx";
@@ -9,8 +9,8 @@ const API = "https://todo-app-backend-gfh3.onrender.com";
 
 /* 🔥 HOME REDIRECT */
 function HomeRedirect() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [auth, setAuth] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -19,20 +19,16 @@ function HomeRedirect() {
           credentials: "include",
         });
 
-        if (res.ok) {
-          navigate("/todos");
-        } else {
-          navigate("/signup");
-        }
+        setAuth(res.ok);
       } catch (err) {
-        navigate("/signup");
+        setAuth(false);
       } finally {
         setLoading(false);
       }
     };
 
     checkAuth();
-  }, [navigate]);
+  }, []);
 
   if (loading) {
     return (
@@ -42,7 +38,11 @@ function HomeRedirect() {
     );
   }
 
-  return null;
+  return auth ? (
+    <Navigate to="/todos" replace />
+  ) : (
+    <Navigate to="/signup" replace />
+  );
 }
 
 /* 🔥 APP */
