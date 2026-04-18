@@ -9,7 +9,7 @@ function Home() {
     const checkAuth = async () => {
       try {
         const res = await fetch(`${API}/api/v1/todos`, {
-          method: "GET",
+          method: "POST",
           credentials: "include",
         });
 
