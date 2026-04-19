@@ -4,13 +4,13 @@ import { motion } from "framer-motion";
 
 export default function Signup() {
   const API = "https://todo-app-backend-gfh3.onrender.com";
-  const api = "http://localhost:7777";
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState(""); // 🔥 added
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [step, setStep] = useState("signup");
 
@@ -22,8 +22,8 @@ export default function Signup() {
     setError("");
     setMessage("");
 
-    if (!email || !password) {
-      return setError("All fields required");
+    if (!password || (!email && !phone)) {
+      return setError("Email or phone required");
     }
 
     setLoading(true);
@@ -32,7 +32,7 @@ export default function Signup() {
       const res = await fetch(`${API}/api/v1/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, phone, password }), // 🔥 updated
       });
 
       const data = await res.json();
@@ -41,7 +41,6 @@ export default function Signup() {
         setError(data.message);
       } else {
         setMessage(data.message);
-        // navigate("/todos");
         setStep("otp");
       }
     } catch {
@@ -83,13 +82,12 @@ export default function Signup() {
 
       if (!res.ok) {
         setError(data.message);
-        navigate("/login");
       } else {
         setMessage("Account Verified ✅");
 
         setTimeout(() => {
           navigate("/todos");
-        }, 1200);
+        }, 1000);
       }
     } catch {
       setError("OTP failed");
@@ -99,127 +97,63 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
-      {/* YELLOW GLOW BACKGROUND */}
-      <div className="absolute w-[700px] h-[700px] bg-yellow-400 blur-[200px] opacity-20 top-[-200px]" />
-      <div className="absolute w-[600px] h-[600px] bg-amber-500 blur-[200px] opacity-20 bottom-[-200px]" />
-
-      {/* CARD */}
-      <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-[420px] p-10 rounded-3xl bg-white/10 backdrop-blur-3xl border border-yellow-400/20 shadow-2xl"
-      >
-        <h1 className="text-4xl text-center font-extrabold text-yellow-400">
-          Create Account 🚀
-        </h1>
-
-        {/* MESSAGE */}
-        {error && <p className="text-red-400 text-center mt-4">{error}</p>}
-        {message && (
-          <p className="text-green-400 text-center mt-4">{message}</p>
-        )}
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <motion.div className="w-[400px] p-8 rounded-2xl bg-white/10">
+        <h1 className="text-3xl text-yellow-400 text-center">Signup 🚀</h1>
 
         {step === "signup" && (
           <>
-            <div className="mt-8 space-y-6">
-              {/* EMAIL */}
-              <div className="relative">
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-4 bg-transparent border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-yellow-400 outline-none"
-                />
-                <label className="absolute left-4 -top-2 text-sm text-yellow-300 bg-black px-1">
-                  Email
-                </label>
-              </div>
+            <input
+              placeholder="Email (optional)"
+              className="w-full p-3 mt-6 bg-black/40"
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-              {/* PASSWORD */}
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-4 bg-transparent border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-amber-400 outline-none"
-                />
+            <input
+              placeholder="Phone (optional)"
+              className="w-full p-3 mt-3 bg-black/40"
+              onChange={(e) => setPhone(e.target.value)}
+            />
 
-                <label className="absolute left-4 -top-2 text-sm text-amber-300 bg-black px-1">
-                  Password
-                </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className="w-full p-3 mt-3 bg-black/40"
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-4 cursor-pointer text-gray-300"
-                >
-                  {showPassword ? "🙈" : "👁️"}
-                </span>
-              </div>
-            </div>
-
-            {/* BUTTON */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
+            <button
               onClick={handleSignup}
-              disabled={loading}
-              className="w-full mt-8 p-4 rounded-xl bg-gradient-to-r cursor-pointer from-yellow-400 to-amber-500 text-black font-bold flex justify-center gap-2"
+              className="w-full mt-5 p-3 bg-yellow-400 text-black"
             >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full cursor-pointer animate-spin"></div>
-                  Creating...
-                </>
-              ) : (
-                "Create Account"
-              )}
-            </motion.button>
-
-            {/* LOGIN TEXT */}
-            <p className="text-center text-gray-400 mt-5 text-sm">
-              Already have an account?{" "}
-              <span
-                onClick={() => navigate("/login")}
-                className="text-yellow-400 cursor-pointer hover:underline"
-              >
-                Login
-              </span>
-            </p>
+              {loading ? "Loading..." : "Signup"}
+            </button>
           </>
         )}
 
         {step === "otp" && (
           <>
-            <p className="text-center text-gray-300 mt-6">Enter 6-digit OTP</p>
+            <p className="text-center mt-5">Enter OTP</p>
 
-            <div className="flex justify-between mt-6">
-              {otp.map((digit, index) => (
+            <div className="flex gap-2 justify-center mt-4">
+              {otp.map((d, i) => (
                 <input
-                  key={index}
-                  id={`otp-${index}`}
-                  value={digit}
-                  onChange={(e) => handleOtpChange(e.target.value, index)}
+                  key={i}
+                  id={`otp-${i}`}
                   maxLength={1}
-                  className="w-12 h-12 text-center text-xl rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-yellow-400 outline-none"
+                  value={d}
+                  onChange={(e) => handleOtpChange(e.target.value, i)}
+                  className="w-10 h-10 text-center bg-black/40"
                 />
               ))}
             </div>
 
-            <motion.button
-              whileTap={{ scale: 0.9 }}
+            <button
               onClick={handleVerifyOtp}
-              disabled={loading}
-              className="w-full mt-8 p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold flex justify-center gap-2"
+              className="w-full mt-5 p-3 bg-green-400 text-black"
             >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                  Verifying...
-                </>
-              ) : (
-                "Verify OTP"
-              )}
-            </motion.button>
+              Verify OTP
+            </button>
           </>
         )}
       </motion.div>
