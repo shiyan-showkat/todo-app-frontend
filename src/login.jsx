@@ -2,32 +2,65 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
+const API = "https://todo-app-backend-gfh3.onrender.com";
+
 export default function Login() {
-  const API = "https://todo-app-backend-gfh3.onrender.com";
   const navigate = useNavigate();
 
+  // inputs
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  // forgot password
   const [forgotEmail, setForgotEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
-
   const [showForgot, setShowForgot] = useState(false);
   const [step, setStep] = useState("email");
 
-  // 🔥 BUTTON LOADING STATES (IMPORTANT)
+  // loaders
   const [loginLoading, setLoginLoading] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
 
+  // messages
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  // ================= AUTO AUTH CHECK =================
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        let res = await fetch(`${API}/api/v1/me`, {
+          credentials: "include",
+        });
+
+        if (res.status === 401) {
+          const refresh = await fetch(`${API}/api/v1/newrefreshtoken`, {
+            method: "POST",
+            credentials: "include",
+          });
+
+          if (!refresh.ok) return;
+
+          res = await fetch(`${API}/api/v1/me`, {
+            credentials: "include",
+          });
+        }
+
+        if (res.ok) {
+          navigate("/todos");
+        }
+      } catch {}
+    };
+
+    checkAuth();
+  }, [navigate]);
+
   // ================= LOGIN =================
-  async function handleLogin() {
+  const handleLogin = async () => {
     setError("");
     setMessage("");
     setLoginLoading(true);
@@ -45,20 +78,22 @@ export default function Login() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        setMessage(data.message);
-        setTimeout(() => navigate("/todos"), 500);
+        setMessage("Login Success 🚀");
+
+        setTimeout(() => {
+          navigate("/todos");
+        }, 600);
       }
     } catch {
       setError("Login failed");
     }
 
     setLoginLoading(false);
-  }
+  };
 
-  // ================= OTP =================
-  async function sendOtp() {
+  // ================= FORGOT FLOW =================
+  const sendOtp = async () => {
     setError("");
-    setMessage("");
     setOtpLoading(true);
 
     try {
@@ -72,20 +107,18 @@ export default function Login() {
 
       if (!res.ok) setError(data.message);
       else {
-        setMessage(data.message);
+        setMessage("OTP sent 📩");
         setStep("otp");
       }
     } catch {
-      setError("Failed OTP");
+      setError("OTP failed");
     }
 
     setOtpLoading(false);
-  }
+  };
 
-  // ================= VERIFY OTP =================
-  async function verifyOtp() {
+  const verifyOtp = async () => {
     setError("");
-    setMessage("");
     setVerifyLoading(true);
 
     try {
@@ -99,42 +132,43 @@ export default function Login() {
 
       if (!res.ok) setError(data.message);
       else {
-        setMessage(data.message);
+        setMessage("OTP verified ✅");
         setStep("reset");
       }
     } catch {
-      setError("OTP failed");
+      setError("OTP error");
     }
 
     setVerifyLoading(false);
-  }
+  };
 
-  // ================= RESET =================
-  async function resetPassword() {
+  const resetPassword = async () => {
     setError("");
-    setMessage("");
     setResetLoading(true);
 
     try {
       const res = await fetch(`${API}/api/v1/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail, newPassword }),
+        body: JSON.stringify({
+          email: forgotEmail,
+          newPassword,
+        }),
       });
 
       const data = await res.json();
 
       if (!res.ok) setError(data.message);
       else {
-        setMessage(data.message);
-        setShowForgot(false);
+        setMessage("Password updated 🔥");
+        setTimeout(() => setShowForgot(false), 1000);
       }
     } catch {
       setError("Reset failed");
     }
 
     setResetLoading(false);
-  }
+  };
 
   // ================= UI =================
   return (
@@ -144,9 +178,9 @@ export default function Login() {
           Login
         </h1>
 
-        {error && <p className="text-red-400 text-center mt-3">{error}</p>}
+        {error && <p className="text-red-400 text-center mt-2">{error}</p>}
         {message && (
-          <p className="text-green-400 text-center mt-3">{message}</p>
+          <p className="text-green-400 text-center mt-2">{message}</p>
         )}
 
         {/* INPUTS */}
@@ -173,7 +207,7 @@ export default function Login() {
           </div>
         </div>
 
-        {/* 🔥 LOGIN BUTTON WITH LOADER */}
+        {/* LOGIN BUTTON */}
         <button
           onClick={handleLogin}
           disabled={loginLoading}
@@ -181,8 +215,8 @@ export default function Login() {
         >
           {loginLoading ? (
             <>
-              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-              Logging in...
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              Logging...
             </>
           ) : (
             "Login"
@@ -202,8 +236,9 @@ export default function Login() {
         {showForgot && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/90">
             <div className="w-[360px] p-6 bg-white/10 rounded-xl border border-yellow-400/20">
-              <h2 className="text-yellow-400 text-center">Reset Password</h2>
+              <h2 className="text-center text-yellow-400">Reset Password</h2>
 
+              {/* STEP 1 */}
               {step === "email" && (
                 <>
                   <input
@@ -215,10 +250,10 @@ export default function Login() {
                   <button
                     onClick={sendOtp}
                     disabled={otpLoading}
-                    className="w-full mt-4 p-2 bg-yellow-400 text-black flex justify-center items-center gap-2"
+                    className="w-full mt-4 p-2 bg-yellow-400 text-black flex justify-center gap-2"
                   >
                     {otpLoading ? (
-                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
                     ) : (
                       "Send OTP"
                     )}
@@ -226,6 +261,7 @@ export default function Login() {
                 </>
               )}
 
+              {/* STEP 2 */}
               {step === "otp" && (
                 <>
                   <input
@@ -237,10 +273,10 @@ export default function Login() {
                   <button
                     onClick={verifyOtp}
                     disabled={verifyLoading}
-                    className="w-full mt-4 p-2 bg-green-400 text-black flex justify-center items-center gap-2"
+                    className="w-full mt-4 p-2 bg-green-400 text-black flex justify-center gap-2"
                   >
                     {verifyLoading ? (
-                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
                     ) : (
                       "Verify OTP"
                     )}
@@ -248,6 +284,7 @@ export default function Login() {
                 </>
               )}
 
+              {/* STEP 3 */}
               {step === "reset" && (
                 <>
                   <input
@@ -259,10 +296,10 @@ export default function Login() {
                   <button
                     onClick={resetPassword}
                     disabled={resetLoading}
-                    className="w-full mt-4 p-2 bg-blue-400 text-black flex justify-center items-center gap-2"
+                    className="w-full mt-4 p-2 bg-blue-400 text-black flex justify-center gap-2"
                   >
                     {resetLoading ? (
-                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
                     ) : (
                       "Reset Password"
                     )}
