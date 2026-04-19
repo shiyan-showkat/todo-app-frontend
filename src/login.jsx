@@ -17,52 +17,20 @@ export default function Login() {
   const [showForgot, setShowForgot] = useState(false);
   const [step, setStep] = useState("email");
 
-  const [loading, setLoading] = useState(false);
-  const [forgotLoading, setForgotLoading] = useState(false);
+  // 🔥 BUTTON LOADING STATES (IMPORTANT)
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-
-  // ✅ AUTO REDIRECT IF ALREADY LOGGED IN
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        let res = await fetch(`${API}/api/v1/me`, {
-          credentials: "include",
-        });
-
-        if (res.status === 401) {
-          const refreshRes = await fetch(`${API}/api/v1/newrefreshtoken`, {
-            method: "POST",
-            credentials: "include",
-          });
-
-          if (!refreshRes.ok) return;
-
-          res = await fetch(`${API}/api/v1/me`, {
-            credentials: "include",
-          });
-        }
-
-        if (res.ok) {
-          navigate("/todos");
-        }
-      } catch {}
-    };
-
-    checkAuth();
-  }, [navigate]);
 
   // ================= LOGIN =================
   async function handleLogin() {
     setError("");
     setMessage("");
-
-    if (!email || !password) {
-      return setError("All fields required");
-    }
-
-    setLoading(true);
+    setLoginLoading(true);
 
     try {
       const res = await fetch(`${API}/api/v1/login`, {
@@ -78,27 +46,20 @@ export default function Login() {
         setError(data.message);
       } else {
         setMessage(data.message);
-
-        // 🔥 small delay for UX
-        setTimeout(() => {
-          navigate("/todos");
-        }, 500);
+        setTimeout(() => navigate("/todos"), 500);
       }
     } catch {
       setError("Login failed");
     }
 
-    setLoading(false);
+    setLoginLoading(false);
   }
 
-  // ================= SEND OTP =================
+  // ================= OTP =================
   async function sendOtp() {
     setError("");
     setMessage("");
-
-    if (!forgotEmail) return setError("Enter email");
-
-    setForgotLoading(true);
+    setOtpLoading(true);
 
     try {
       const res = await fetch(`${API}/api/v1/forgot-otp`, {
@@ -109,27 +70,23 @@ export default function Login() {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.message);
-      } else {
+      if (!res.ok) setError(data.message);
+      else {
         setMessage(data.message);
         setStep("otp");
       }
     } catch {
-      setError("Failed to send OTP");
+      setError("Failed OTP");
     }
 
-    setForgotLoading(false);
+    setOtpLoading(false);
   }
 
   // ================= VERIFY OTP =================
   async function verifyOtp() {
     setError("");
     setMessage("");
-
-    if (!otp) return setError("Enter OTP");
-
-    setForgotLoading(true);
+    setVerifyLoading(true);
 
     try {
       const res = await fetch(`${API}/api/v1/verify-forgot-otp`, {
@@ -140,154 +97,131 @@ export default function Login() {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.message);
-      } else {
+      if (!res.ok) setError(data.message);
+      else {
         setMessage(data.message);
         setStep("reset");
       }
     } catch {
-      setError("OTP verification failed");
+      setError("OTP failed");
     }
 
-    setForgotLoading(false);
+    setVerifyLoading(false);
   }
 
-  // ================= RESET PASSWORD =================
+  // ================= RESET =================
   async function resetPassword() {
     setError("");
     setMessage("");
-
-    if (!newPassword) return setError("Enter new password");
-
-    setForgotLoading(true);
+    setResetLoading(true);
 
     try {
       const res = await fetch(`${API}/api/v1/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: forgotEmail,
-          newPassword,
-        }),
+        body: JSON.stringify({ email: forgotEmail, newPassword }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.message);
-      } else {
+      if (!res.ok) setError(data.message);
+      else {
         setMessage(data.message);
-
-        setTimeout(() => {
-          setShowForgot(false);
-        }, 1200);
-
-        setStep("email");
-        setForgotEmail("");
-        setOtp("");
-        setNewPassword("");
+        setShowForgot(false);
       }
     } catch {
       setError("Reset failed");
     }
 
-    setForgotLoading(false);
+    setResetLoading(false);
   }
 
+  // ================= UI =================
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
-      {/* UI SAME AS YOURS (unchanged) */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-[420px] p-10 rounded-3xl bg-white/10 backdrop-blur-2xl border border-yellow-400/20 shadow-2xl"
-      >
-        <h1 className="text-4xl text-center font-extrabold text-yellow-400">
-          Login 🔐
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <motion.div className="w-[420px] p-8 rounded-2xl bg-white/10 border border-yellow-400/20">
+        <h1 className="text-3xl text-center text-yellow-400 font-bold">
+          Login
         </h1>
 
-        {error && <p className="text-red-400 text-center mt-4">{error}</p>}
+        {error && <p className="text-red-400 text-center mt-3">{error}</p>}
         {message && (
-          <p className="text-green-400 text-center mt-4">{message}</p>
+          <p className="text-green-400 text-center mt-3">{message}</p>
         )}
 
-        <div className="mt-8 space-y-4">
+        {/* INPUTS */}
+        <div className="mt-6 space-y-4">
           <input
-            className="w-full p-4 rounded-xl bg-black/60 text-white border border-white/10"
+            className="w-full p-3 rounded bg-black/60"
             placeholder="Email"
-            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              className="w-full p-4 rounded-xl bg-black/60 text-white border border-white/10"
+              className="w-full p-3 rounded bg-black/60"
               placeholder="Password"
-              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-
             <span
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-4 cursor-pointer"
+              className="absolute right-3 top-3 cursor-pointer"
             >
-              {showPassword ? "🙈" : "👁️"}
+              👁️
             </span>
           </div>
         </div>
 
+        {/* 🔥 LOGIN BUTTON WITH LOADER */}
         <button
           onClick={handleLogin}
-          disabled={loading}
-          className="w-full mt-7 p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold flex justify-center gap-2"
+          disabled={loginLoading}
+          className="w-full mt-6 p-3 rounded bg-yellow-400 text-black font-bold flex justify-center items-center gap-2"
         >
-          {loading ? "Logging..." : "Login"}
+          {loginLoading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+              Logging in...
+            </>
+          ) : (
+            "Login"
+          )}
         </button>
-
-        <p className="text-center text-gray-400 mt-6 text-sm">
-          Don’t have an account?{" "}
-          <span
-            className="text-yellow-400 cursor-pointer"
-            onClick={() => navigate("/signup")}
-          >
-            Signup
-          </span>
-        </p>
 
         <p
           onClick={() => setShowForgot(true)}
-          className="text-center text-yellow-400 mt-5 cursor-pointer"
+          className="text-center mt-4 text-yellow-400 cursor-pointer"
         >
           Forgot Password?
         </p>
       </motion.div>
 
-      {/* Forgot Modal same as yours (unchanged) */}
+      {/* ================= FORGOT MODAL ================= */}
       <AnimatePresence>
         {showForgot && (
-          <motion.div className="fixed inset-0 flex items-center justify-center bg-black z-50">
-            <motion.div className="w-[360px] p-6 rounded-2xl bg-white/10 border border-yellow-400/30">
-              <h2 className="text-yellow-400 text-center text-xl font-bold">
-                Reset Password
-              </h2>
-
-              {error && <p className="text-red-400 mt-3">{error}</p>}
-              {message && <p className="text-green-400 mt-3">{message}</p>}
+          <div className="fixed inset-0 flex items-center justify-center bg-black/90">
+            <div className="w-[360px] p-6 bg-white/10 rounded-xl border border-yellow-400/20">
+              <h2 className="text-yellow-400 text-center">Reset Password</h2>
 
               {step === "email" && (
                 <>
                   <input
-                    className="w-full mt-6 p-3 rounded-xl bg-black/60 text-white"
-                    placeholder="Enter email"
+                    className="w-full mt-4 p-2 bg-black/60 rounded"
+                    placeholder="Email"
                     onChange={(e) => setForgotEmail(e.target.value)}
                   />
+
                   <button
                     onClick={sendOtp}
-                    className="w-full mt-5 p-3 bg-yellow-400 rounded-xl"
+                    disabled={otpLoading}
+                    className="w-full mt-4 p-2 bg-yellow-400 text-black flex justify-center items-center gap-2"
                   >
-                    Send OTP
+                    {otpLoading ? (
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      "Send OTP"
+                    )}
                   </button>
                 </>
               )}
@@ -295,15 +229,21 @@ export default function Login() {
               {step === "otp" && (
                 <>
                   <input
-                    className="w-full mt-6 p-3 rounded-xl bg-black/60 text-white"
-                    placeholder="Enter OTP"
+                    className="w-full mt-4 p-2 bg-black/60 rounded"
+                    placeholder="OTP"
                     onChange={(e) => setOtp(e.target.value)}
                   />
+
                   <button
                     onClick={verifyOtp}
-                    className="w-full mt-5 p-3 bg-green-400 rounded-xl"
+                    disabled={verifyLoading}
+                    className="w-full mt-4 p-2 bg-green-400 text-black flex justify-center items-center gap-2"
                   >
-                    Verify OTP
+                    {verifyLoading ? (
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      "Verify OTP"
+                    )}
                   </button>
                 </>
               )}
@@ -311,15 +251,21 @@ export default function Login() {
               {step === "reset" && (
                 <>
                   <input
-                    className="w-full mt-6 p-3 rounded-xl bg-black/60 text-white"
+                    className="w-full mt-4 p-2 bg-black/60 rounded"
                     placeholder="New Password"
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
+
                   <button
                     onClick={resetPassword}
-                    className="w-full mt-5 p-3 bg-blue-400 rounded-xl"
+                    disabled={resetLoading}
+                    className="w-full mt-4 p-2 bg-blue-400 text-black flex justify-center items-center gap-2"
                   >
-                    Reset Password
+                    {resetLoading ? (
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      "Reset Password"
+                    )}
                   </button>
                 </>
               )}
@@ -330,8 +276,8 @@ export default function Login() {
               >
                 Close
               </button>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
       </AnimatePresence>
     </div>
