@@ -9,85 +9,106 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [step, setStep] = useState("signup");
+  const [otp, setOtp] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // SIGNUP
   const handleSignup = async () => {
     setLoading(true);
     setError("");
 
-    try {
-      const res = await fetch(`${API}/api/v1/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const res = await fetch(`${API}/api/v1/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) setError(data.message);
-      else navigate("/login");
-    } catch {
-      setError("Signup failed");
-    }
+    if (!res.ok) setError(data.message);
+    else setStep("otp");
+
+    setLoading(false);
+  };
+
+  // VERIFY OTP
+  const handleOtp = async () => {
+    setLoading(true);
+
+    const res = await fetch(`${API}/api/v1/verifyotp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) setError(data.message);
+    else navigate("/login");
 
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
-      {/* glow */}
-      <div className="absolute w-[600px] h-[600px] bg-yellow-400 blur-[200px] opacity-20 top-[-200px]" />
-      <div className="absolute w-[500px] h-[500px] bg-amber-500 blur-[200px] opacity-20 bottom-[-200px]" />
-
-      {/* CARD */}
-      <div className="w-[400px] p-10 rounded-3xl bg-white/10 backdrop-blur-3xl border border-yellow-400/20 shadow-2xl">
-        <h1 className="text-4xl text-center font-bold text-yellow-400">
-          Create Account 🚀
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="w-[400px] p-8 bg-white/10 rounded-2xl border border-yellow-400/20">
+        <h1 className="text-3xl text-yellow-400 text-center font-bold">
+          Signup 🚀
         </h1>
 
-        {error && (
-          <p className="text-red-400 text-center mt-4 text-sm">{error}</p>
+        {error && <p className="text-red-400 text-center mt-3">{error}</p>}
+
+        {/* STEP 1 */}
+        {step === "signup" && (
+          <>
+            <input
+              className="w-full mt-5 p-3 bg-black/40 text-white rounded hover:ring-2 hover:ring-yellow-400"
+              placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <input
+              type="password"
+              className="w-full mt-3 p-3 bg-black/40 text-white rounded hover:ring-2 hover:ring-yellow-400"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button
+              onClick={handleSignup}
+              className="w-full mt-5 p-3 bg-yellow-400 text-black rounded cursor-pointer hover:scale-105 transition"
+            >
+              {loading ? "Sending OTP..." : "Signup"}
+            </button>
+          </>
         )}
 
-        <div className="mt-8 space-y-5">
-          <input
-            placeholder="Email"
-            className="w-full p-4 bg-transparent border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-yellow-400 outline-none"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        {/* STEP 2 - OTP */}
+        {step === "otp" && (
+          <>
+            <input
+              className="w-full mt-5 p-3 bg-black/40 text-white rounded text-center tracking-widest"
+              placeholder="Enter OTP"
+              onChange={(e) => setOtp(e.target.value)}
+            />
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full p-4 bg-transparent border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-yellow-400 outline-none"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+            <button
+              onClick={handleOtp}
+              className="w-full mt-5 p-3 bg-green-400 text-black rounded cursor-pointer hover:scale-105 transition"
+            >
+              Verify OTP
+            </button>
+          </>
+        )}
 
-        <button
-          onClick={handleSignup}
-          disabled={loading}
-          className="w-full mt-8 p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold flex justify-center items-center gap-2"
+        <p
+          onClick={() => navigate("/login")}
+          className="text-center text-yellow-400 mt-4 cursor-pointer hover:underline"
         >
-          {loading ? (
-            <>
-              <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-              Creating...
-            </>
-          ) : (
-            "Signup"
-          )}
-        </button>
-
-        <p className="text-center text-gray-400 mt-5 text-sm">
-          Already have an account?{" "}
-          <span
-            onClick={() => navigate("/login")}
-            className="text-yellow-400 cursor-pointer"
-          >
-            Login
-          </span>
+          Already have account? Login
         </p>
       </div>
     </div>
