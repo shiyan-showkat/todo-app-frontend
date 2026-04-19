@@ -22,16 +22,24 @@ export default function Signup() {
     setError("");
     setSuccess("");
 
-    const res = await fetch(`${API}/api/v1/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch(`${API}/api/v1/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) setError(data.message);
-    else setStep("otp");
+      if (!res.ok) {
+        setError(data.message);
+      } else {
+        setSuccess("OTP sent to email 📩");
+        setStep("otp");
+      }
+    } catch {
+      setError("Signup failed");
+    }
 
     setLoading(false);
   };
@@ -44,25 +52,29 @@ export default function Signup() {
 
     const finalOtp = otp.join("");
 
-    const res = await fetch(`${API}/api/v1/verifyotp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp: finalOtp }),
-    });
+    try {
+      const res = await fetch(`${API}/api/v1/verifyotp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp: finalOtp }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      setError(data.message);
-    } else {
-      setSuccess("OTP Verified ✅ Redirecting...");
-      setTimeout(() => navigate("/login"), 1200);
+      if (!res.ok) {
+        setError(data.message);
+      } else {
+        setSuccess("OTP Verified ✅ Redirecting...");
+        setTimeout(() => navigate("/login"), 1200);
+      }
+    } catch {
+      setError("OTP verification failed");
     }
 
     setLoading(false);
   };
 
-  // OTP CHANGE
+  // OTP INPUT
   const handleOtpChange = (value, index) => {
     if (!/^\d?$/.test(value)) return;
 
@@ -71,35 +83,31 @@ export default function Signup() {
     setOtp(newOtp);
 
     if (value && index < 5) {
-      document.getElementById(`otp-${index + 1}`).focus();
+      document.getElementById(`otp-${index + 1}`)?.focus();
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
-      {/* glow */}
-      <div className="absolute w-[600px] h-[600px] bg-yellow-300 blur-[200px] opacity-30 top-[-200px]" />
-      <div className="absolute w-[500px] h-[500px] bg-yellow-500 blur-[200px] opacity-25 bottom-[-200px]" />
+      {/* BACKGROUND GLOW */}
+      <div className="absolute w-[600px] h-[600px] bg-yellow-300 blur-[200px] opacity-30 top-[-200px] pointer-events-none" />
+      <div className="absolute w-[500px] h-[500px] bg-yellow-500 blur-[200px] opacity-25 bottom-[-200px] pointer-events-none" />
 
       {/* CARD */}
-      <div className="w-[420px] p-10 rounded-3xl bg-white/10 border border-yellow-300/30 backdrop-blur-3xl">
+      <div className="relative z-10 w-[420px] p-10 rounded-3xl bg-white/10 border border-yellow-300/30 backdrop-blur-3xl">
         <h1 className="text-3xl text-center text-yellow-300 font-bold">
           Signup 🚀
         </h1>
 
-        {/* ERROR */}
         {error && (
           <p className="text-red-400 text-center mt-3 text-sm">{error}</p>
         )}
 
-        {/* SUCCESS */}
         {success && (
-          <p className="text-green-400 text-center mt-3 text-sm font-semibold">
-            {success}
-          </p>
+          <p className="text-green-400 text-center mt-3 text-sm">{success}</p>
         )}
 
-        {/* STEP 1 */}
+        {/* SIGNUP STEP */}
         {step === "signup" && (
           <>
             <input
@@ -132,7 +140,7 @@ export default function Signup() {
           </>
         )}
 
-        {/* STEP 2 OTP */}
+        {/* OTP STEP */}
         {step === "otp" && (
           <>
             <p className="text-center text-gray-300 mt-5">
@@ -149,7 +157,7 @@ export default function Signup() {
                   onChange={(e) => handleOtpChange(e.target.value, i)}
                   className="
                     w-12 h-12 text-center text-xl font-bold
-                    bg-yellow-300/30 text-yellow-200
+                    bg-yellow-300/20 text-yellow-200
                     border border-yellow-300
                     rounded-lg
                     focus:outline-none focus:ring-2 focus:ring-yellow-300
