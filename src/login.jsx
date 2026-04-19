@@ -32,11 +32,15 @@ export default function Login() {
             credentials: "include",
           });
 
-          if (!refresh.ok) return navigate("/login");
+          if (!refresh.ok) {
+            navigate("/login");
+          }
 
           res = await fetch(`${API}/api/v1/me`, {
             credentials: "include",
           });
+        } else {
+          navigate("/todos");
         }
 
         if (res.ok) navigate("/todos");
