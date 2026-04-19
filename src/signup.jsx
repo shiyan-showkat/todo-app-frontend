@@ -14,11 +14,13 @@ export default function Signup() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // SIGNUP
   const handleSignup = async () => {
     setLoading(true);
     setError("");
+    setSuccess("");
 
     const res = await fetch(`${API}/api/v1/signup`, {
       method: "POST",
@@ -38,6 +40,7 @@ export default function Signup() {
   const handleOtp = async () => {
     setLoading(true);
     setError("");
+    setSuccess("");
 
     const finalOtp = otp.join("");
 
@@ -49,13 +52,17 @@ export default function Signup() {
 
     const data = await res.json();
 
-    if (!res.ok) setError(data.message);
-    else navigate("/login");
+    if (!res.ok) {
+      setError(data.message);
+    } else {
+      setSuccess("OTP Verified ✅ Redirecting...");
+      setTimeout(() => navigate("/login"), 1200);
+    }
 
     setLoading(false);
   };
 
-  // OTP INPUT CHANGE
+  // OTP CHANGE
   const handleOtpChange = (value, index) => {
     if (!/^\d?$/.test(value)) return;
 
@@ -70,18 +77,26 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
-      {/* glow background */}
-      <div className="absolute w-[600px] h-[600px] bg-yellow-400 blur-[200px] opacity-20 top-[-200px]" />
-      <div className="absolute w-[500px] h-[500px] bg-amber-500 blur-[200px] opacity-20 bottom-[-200px]" />
+      {/* glow */}
+      <div className="absolute w-[600px] h-[600px] bg-yellow-300 blur-[200px] opacity-30 top-[-200px]" />
+      <div className="absolute w-[500px] h-[500px] bg-yellow-500 blur-[200px] opacity-25 bottom-[-200px]" />
 
       {/* CARD */}
-      <div className="w-[420px] p-10 rounded-3xl bg-white/10 border border-yellow-400/20 backdrop-blur-3xl">
-        <h1 className="text-3xl text-center text-yellow-400 font-bold">
+      <div className="w-[420px] p-10 rounded-3xl bg-white/10 border border-yellow-300/30 backdrop-blur-3xl">
+        <h1 className="text-3xl text-center text-yellow-300 font-bold">
           Signup 🚀
         </h1>
 
+        {/* ERROR */}
         {error && (
           <p className="text-red-400 text-center mt-3 text-sm">{error}</p>
+        )}
+
+        {/* SUCCESS */}
+        {success && (
+          <p className="text-green-400 text-center mt-3 text-sm font-semibold">
+            {success}
+          </p>
         )}
 
         {/* STEP 1 */}
@@ -89,21 +104,21 @@ export default function Signup() {
           <>
             <input
               placeholder="Email"
-              className="w-full mt-6 p-3 bg-black/40 text-white rounded hover:ring-2 hover:ring-yellow-400 transition"
+              className="w-full mt-6 p-3 bg-black/40 text-white rounded hover:ring-2 hover:ring-yellow-300 transition"
               onChange={(e) => setEmail(e.target.value)}
             />
 
             <input
               type="password"
               placeholder="Password"
-              className="w-full mt-3 p-3 bg-black/40 text-white rounded hover:ring-2 hover:ring-yellow-400 transition"
+              className="w-full mt-3 p-3 bg-black/40 text-white rounded hover:ring-2 hover:ring-yellow-300 transition"
               onChange={(e) => setPassword(e.target.value)}
             />
 
             <button
               onClick={handleSignup}
               disabled={loading}
-              className="w-full mt-6 p-3 bg-yellow-400 text-black font-bold rounded flex justify-center items-center gap-2 cursor-pointer"
+              className="w-full mt-6 p-3 bg-yellow-300 text-black font-bold rounded flex justify-center items-center gap-2 cursor-pointer hover:scale-[1.02] transition"
             >
               {loading ? (
                 <>
@@ -117,7 +132,7 @@ export default function Signup() {
           </>
         )}
 
-        {/* STEP 2 - OTP (YELLOW BOX STYLE 🔥) */}
+        {/* STEP 2 OTP */}
         {step === "otp" && (
           <>
             <p className="text-center text-gray-300 mt-5">
@@ -134,11 +149,11 @@ export default function Signup() {
                   onChange={(e) => handleOtpChange(e.target.value, i)}
                   className="
                     w-12 h-12 text-center text-xl font-bold
-                    bg-yellow-400/20 text-yellow-400
-                    border border-yellow-400
+                    bg-yellow-300/30 text-yellow-200
+                    border border-yellow-300
                     rounded-lg
-                    focus:outline-none focus:ring-2 focus:ring-yellow-400
-                    hover:bg-yellow-400/30 transition
+                    focus:outline-none focus:ring-2 focus:ring-yellow-300
+                    hover:bg-yellow-300/40 transition
                   "
                 />
               ))}
@@ -147,7 +162,7 @@ export default function Signup() {
             <button
               onClick={handleOtp}
               disabled={loading}
-              className="w-full mt-6 p-3 bg-green-400 text-black font-bold rounded flex justify-center items-center gap-2 cursor-pointer"
+              className="w-full mt-6 p-3 bg-green-400 text-black font-bold rounded flex justify-center items-center gap-2 cursor-pointer hover:scale-[1.02] transition"
             >
               {loading ? (
                 <>
@@ -166,7 +181,7 @@ export default function Signup() {
           Already have account?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-yellow-400 cursor-pointer hover:underline"
+            className="text-yellow-300 cursor-pointer hover:underline"
           >
             Login
           </span>
