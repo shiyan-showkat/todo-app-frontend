@@ -10,7 +10,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
 
   const [step, setStep] = useState("signup");
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -39,10 +39,12 @@ export default function Signup() {
     setLoading(true);
     setError("");
 
+    const finalOtp = otp.join("");
+
     const res = await fetch(`${API}/api/v1/verifyotp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp }),
+      body: JSON.stringify({ email, otp: finalOtp }),
     });
 
     const data = await res.json();
@@ -53,14 +55,27 @@ export default function Signup() {
     setLoading(false);
   };
 
+  // OTP INPUT CHANGE
+  const handleOtpChange = (value, index) => {
+    if (!/^\d?$/.test(value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    if (value && index < 5) {
+      document.getElementById(`otp-${index + 1}`).focus();
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
-      {/* glow */}
+      {/* glow background */}
       <div className="absolute w-[600px] h-[600px] bg-yellow-400 blur-[200px] opacity-20 top-[-200px]" />
       <div className="absolute w-[500px] h-[500px] bg-amber-500 blur-[200px] opacity-20 bottom-[-200px]" />
 
-      {/* CARD (same login style) */}
-      <div className="w-[400px] p-10 rounded-3xl bg-white/10 border border-yellow-400/20 backdrop-blur-3xl">
+      {/* CARD */}
+      <div className="w-[420px] p-10 rounded-3xl bg-white/10 border border-yellow-400/20 backdrop-blur-3xl">
         <h1 className="text-3xl text-center text-yellow-400 font-bold">
           Signup 🚀
         </h1>
@@ -102,19 +117,32 @@ export default function Signup() {
           </>
         )}
 
-        {/* STEP 2 OTP */}
+        {/* STEP 2 - OTP (YELLOW BOX STYLE 🔥) */}
         {step === "otp" && (
           <>
             <p className="text-center text-gray-300 mt-5">
               Enter OTP sent to email
             </p>
 
-            <input
-              maxLength={6}
-              placeholder="● ● ● ● ● ●"
-              className="w-full mt-5 p-4 bg-black/40 text-yellow-400 text-center tracking-[10px] text-xl rounded border border-yellow-400 hover:ring-2 hover:ring-yellow-400 transition"
-              onChange={(e) => setOtp(e.target.value)}
-            />
+            <div className="flex justify-between mt-6 gap-2">
+              {otp.map((val, i) => (
+                <input
+                  key={i}
+                  id={`otp-${i}`}
+                  maxLength={1}
+                  value={val}
+                  onChange={(e) => handleOtpChange(e.target.value, i)}
+                  className="
+                    w-12 h-12 text-center text-xl font-bold
+                    bg-yellow-400/20 text-yellow-400
+                    border border-yellow-400
+                    rounded-lg
+                    focus:outline-none focus:ring-2 focus:ring-yellow-400
+                    hover:bg-yellow-400/30 transition
+                  "
+                />
+              ))}
+            </div>
 
             <button
               onClick={handleOtp}
