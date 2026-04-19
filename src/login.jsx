@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API = "https://todo-app-backend-gfh3.onrender.com";
@@ -6,67 +6,36 @@ const API = "https://todo-app-backend-gfh3.onrender.com";
 export default function Login() {
   const navigate = useNavigate();
 
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
 
-  // 🔥 forgot password states
+  // FORGOT PASSWORD STATES
   const [showForgot, setShowForgot] = useState(false);
   const [step, setStep] = useState("email");
+  const [forgotEmail, setForgotEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        let res = await fetch(`${API}/api/v1/me`, {
-          credentials: "include",
-        });
-
-        if (res.status === 401) {
-          const refresh = await fetch(`${API}/api/v1/newrefreshtoken`, {
-            method: "POST",
-            credentials: "include",
-          });
-
-          if (!refresh.ok) return;
-
-          res = await fetch(`${API}/api/v1/me`, {
-            credentials: "include",
-          });
-        }
-
-        if (res.ok) navigate("/todos");
-      } catch {}
-    };
-
-    checkAuth();
-  }, []);
-
-  // ================= LOGIN =================
+  // LOGIN
   const handleLogin = async () => {
-    setError("");
-    setMessage("");
     setLoading(true);
+    setError("");
 
     try {
       const res = await fetch(`${API}/api/v1/login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) setError(data.message);
-      else {
-        setMessage("Login success 🚀");
-        setTimeout(() => navigate("/todos"), 700);
-      }
+      else navigate("/todos");
     } catch {
       setError("Login failed");
     }
@@ -74,91 +43,77 @@ export default function Login() {
     setLoading(false);
   };
 
-  // ================= FORGOT PASSWORD =================
-
+  // FORGOT - SEND OTP
   const sendOtp = async () => {
-    setError("");
-
-    const res = await fetch(`${API}/api/v1/forgot-otp`, {
+    await fetch(`${API}/api/v1/forgot-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: identifier }),
+      body: JSON.stringify({ email: forgotEmail }),
     });
 
-    const data = await res.json();
-
-    if (!res.ok) setError(data.message);
-    else {
-      setMessage("OTP sent 📩");
-      setStep("otp");
-    }
+    setStep("otp");
   };
 
+  // VERIFY OTP
   const verifyOtp = async () => {
-    const res = await fetch(`${API}/api/v1/verify-forgot-otp`, {
+    await fetch(`${API}/api/v1/verify-forgot-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: identifier, otp }),
+      body: JSON.stringify({ email: forgotEmail, otp }),
     });
 
-    const data = await res.json();
-
-    if (!res.ok) setError(data.message);
-    else {
-      setMessage("Verified ✅");
-      setStep("reset");
-    }
+    setStep("reset");
   };
 
+  // RESET PASSWORD
   const resetPassword = async () => {
-    const res = await fetch(`${API}/api/v1/reset-password`, {
+    await fetch(`${API}/api/v1/reset-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: identifier,
+        email: forgotEmail,
         newPassword,
       }),
     });
 
-    const data = await res.json();
-
-    if (!res.ok) setError(data.message);
-    else {
-      setMessage("Password updated 🔥");
-      setTimeout(() => setShowForgot(false), 800);
-    }
+    setShowForgot(false);
+    setStep("email");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
       {/* glow */}
-      <div className="absolute w-[500px] h-[500px] bg-yellow-400 blur-[200px] opacity-20 top-[-200px]" />
+      <div className="absolute w-[600px] h-[600px] bg-yellow-400 blur-[200px] opacity-20 top-[-200px]" />
+      <div className="absolute w-[500px] h-[500px] bg-amber-500 blur-[200px] opacity-20 bottom-[-200px]" />
 
-      {/* CARD */}
-      <div className="w-[400px] p-10 rounded-2xl bg-white/10 backdrop-blur-xl border border-yellow-400/20">
-        <h1 className="text-4xl text-yellow-400 text-center">
-          Welcome Back 🔐
+      {/* LOGIN CARD */}
+      <div className="w-[400px] p-10 rounded-3xl bg-white/10 border border-yellow-400/20">
+        <h1 className="text-3xl text-center text-yellow-400 font-bold">
+          Login 🔐
         </h1>
 
-        {/* inputs */}
+        {error && (
+          <p className="text-red-400 text-center mt-3 text-sm">{error}</p>
+        )}
+
         <input
-          placeholder="Email or Phone"
-          className="w-full p-4 mt-6 bg-black/40 text-white"
-          onChange={(e) => setIdentifier(e.target.value)}
+          placeholder="Email"
+          className="w-full mt-6 p-3 bg-black/40 text-white"
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-4 mt-3 bg-black/40 text-white"
+          className="w-full mt-3 p-3 bg-black/40 text-white"
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {/* login */}
+        {/* LOGIN BUTTON */}
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full mt-5 p-3 bg-yellow-400 text-black flex justify-center items-center gap-2"
+          className="w-full mt-5 p-3 bg-yellow-400 text-black font-bold flex justify-center items-center gap-2"
         >
           {loading ? (
             <>
@@ -170,8 +125,8 @@ export default function Login() {
           )}
         </button>
 
-        {/* signup */}
-        <p className="text-center text-gray-400 mt-4 text-sm">
+        {/* LINKS */}
+        <p className="text-center text-sm text-gray-400 mt-4">
           Don’t have account?{" "}
           <span
             onClick={() => navigate("/signup")}
@@ -181,10 +136,9 @@ export default function Login() {
           </span>
         </p>
 
-        {/* forgot */}
         <p
           onClick={() => setShowForgot(true)}
-          className="text-center text-yellow-400 mt-2 cursor-pointer text-sm"
+          className="text-center text-yellow-400 text-sm mt-2 cursor-pointer"
         >
           Forgot Password?
         </p>
@@ -192,15 +146,23 @@ export default function Login() {
 
       {/* FORGOT MODAL */}
       {showForgot && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center">
-          <div className="w-[350px] p-6 bg-white/10 rounded-xl">
-            <h2 className="text-yellow-400 text-center">Reset Password</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/90">
+          <div className="w-[350px] p-6 bg-white/10 rounded-xl border border-yellow-400/20">
+            <h2 className="text-yellow-400 text-center font-bold">
+              Reset Password
+            </h2>
 
             {step === "email" && (
               <>
+                <input
+                  className="w-full mt-4 p-2 bg-black/60 text-white"
+                  placeholder="Email"
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                />
+
                 <button
                   onClick={sendOtp}
-                  className="w-full mt-4 p-2 bg-yellow-400"
+                  className="w-full mt-4 p-2 bg-yellow-400 text-black"
                 >
                   Send OTP
                 </button>
@@ -210,15 +172,16 @@ export default function Login() {
             {step === "otp" && (
               <>
                 <input
-                  className="w-full mt-4 p-2"
+                  className="w-full mt-4 p-2 bg-black/60 text-white"
                   placeholder="OTP"
                   onChange={(e) => setOtp(e.target.value)}
                 />
+
                 <button
                   onClick={verifyOtp}
-                  className="w-full mt-3 bg-green-400 p-2"
+                  className="w-full mt-4 p-2 bg-green-400 text-black"
                 >
-                  Verify
+                  Verify OTP
                 </button>
               </>
             )}
@@ -226,22 +189,23 @@ export default function Login() {
             {step === "reset" && (
               <>
                 <input
-                  className="w-full mt-4 p-2"
+                  className="w-full mt-4 p-2 bg-black/60 text-white"
                   placeholder="New Password"
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
+
                 <button
                   onClick={resetPassword}
-                  className="w-full mt-3 bg-blue-400 p-2"
+                  className="w-full mt-4 p-2 bg-blue-400 text-black"
                 >
-                  Reset
+                  Reset Password
                 </button>
               </>
             )}
 
             <button
               onClick={() => setShowForgot(false)}
-              className="w-full mt-3 text-gray-300"
+              className="w-full mt-4 text-gray-300 text-sm"
             >
               Close
             </button>
