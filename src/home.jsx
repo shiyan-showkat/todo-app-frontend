@@ -43,7 +43,7 @@ function Home() {
     };
 
     checkAuth();
-  }, [navigate]);
+  }, []);
 
   if (loading) {
     return (
