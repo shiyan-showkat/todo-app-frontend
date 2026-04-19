@@ -6,28 +6,54 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let isMounted = true;
+
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API}/api/v1/me`, {
+        let res = await fetch(`${API}/api/v1/me`, {
           credentials: "include",
         });
 
-        if (res.ok) {
-          navigate("/todos");
-        } else {
-          navigate("/login");
+        // 🔁 ACCESS TOKEN EXPIRED → TRY REFRESH
+        if (res.status === 401) {
+          const refreshRes = await fetch(`${API}/api/v1/newrefreshtoken`, {
+            method: "POST",
+            credentials: "include",
+          });
+
+          if (!refreshRes.ok) {
+            if (isMounted) navigate("/login");
+            return;
+          }
+
+          // 🔁 retry /me after refresh
+          res = await fetch(`${API}/api/v1/me`, {
+            credentials: "include",
+          });
         }
-      } catch {
-        navigate("/login");
+
+        if (isMounted) {
+          if (res.ok) {
+            navigate("/todos");
+          } else {
+            navigate("/login");
+          }
+        }
+      } catch (err) {
+        if (isMounted) navigate("/login");
       }
     };
 
     checkAuth();
-  }, [navigate]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate, API]);
 
   return (
     <div className="h-screen flex items-center justify-center text-white">
-      Loading...
+      Checking authentication...
     </div>
   );
 }

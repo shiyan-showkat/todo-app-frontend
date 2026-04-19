@@ -83,6 +83,7 @@ export default function Signup() {
 
       if (!res.ok) {
         setError(data.message);
+        navigate("/login");
       } else {
         setMessage("Account Verified ✅");
 

@@ -26,7 +26,6 @@ export default function Todos() {
           credentials: "include",
         });
 
-        // ❌ refresh failed → login
         if (!refreshRes.ok) {
           navigate("/login");
           return;
@@ -42,7 +41,6 @@ export default function Todos() {
       setTodos(data.gettodos || []);
     } catch (err) {
       console.log(err);
-      navigate("/login");
     } finally {
       setLoading(false);
     }
