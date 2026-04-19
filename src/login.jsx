@@ -62,6 +62,7 @@ export default function Login() {
   // ================= LOGIN =================
   const handleLogin = async () => {
     setError("");
+    setMessage("");
     setLoading(true);
 
     try {
@@ -77,7 +78,7 @@ export default function Login() {
       if (!res.ok) setError(data.message);
       else {
         setMessage("Welcome back 🚀");
-        setTimeout(() => navigate("/todos"), 500);
+        setTimeout(() => navigate("/todos"), 600);
       }
     } catch {
       setError("Login failed");
@@ -150,7 +151,7 @@ export default function Login() {
       if (!res.ok) setError(data.message);
       else {
         setMessage("Password updated 🔥");
-        setTimeout(() => setShowForgot(false), 800);
+        setTimeout(() => setShowForgot(false), 700);
       }
     } catch {
       setError("Reset failed");
@@ -160,94 +161,108 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      {/* LOGIN CARD */}
-      <motion.div className="w-[380px] p-8 rounded-2xl bg-white/10 border border-yellow-400/20">
-        {/* TITLE */}
-        <h1 className="text-3xl text-center font-bold text-yellow-400">
-          Login
+    <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
+      {/* glow like signup */}
+      <div className="absolute w-[600px] h-[600px] bg-yellow-400 blur-[200px] opacity-20 top-[-200px]" />
+      <div className="absolute w-[500px] h-[500px] bg-amber-500 blur-[200px] opacity-20 bottom-[-200px]" />
+
+      {/* LOGIN CARD (SIGNUP STYLE MATCH) */}
+      <motion.div
+        initial={{ opacity: 0, y: 40, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        className="w-[420px] p-10 rounded-3xl bg-white/10 backdrop-blur-3xl border border-yellow-400/20 shadow-2xl"
+      >
+        <h1 className="text-4xl text-center font-extrabold text-yellow-400">
+          Welcome Back 🔐
         </h1>
 
-        <p className="text-center text-xs text-gray-400 mt-1">
-          Welcome back 👋
+        <p className="text-center text-gray-400 text-sm mt-1">
+          Login to continue
         </p>
 
-        {error && <p className="text-red-400 text-center mt-2">{error}</p>}
+        {/* messages */}
+        {error && <p className="text-red-400 text-center mt-4">{error}</p>}
         {message && (
-          <p className="text-green-400 text-center mt-2">{message}</p>
+          <p className="text-green-400 text-center mt-4">{message}</p>
         )}
 
-        {/* INPUTS */}
-        <div className="mt-6 space-y-4">
+        {/* inputs */}
+        <div className="mt-8 space-y-6">
+          {/* EMAIL */}
           <input
-            className="w-full p-3 rounded bg-black/60"
+            className="w-full p-4 bg-transparent border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-yellow-400 outline-none"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
           />
 
+          {/* PASSWORD */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              className="w-full p-3 rounded bg-black/60"
+              className="w-full p-4 bg-transparent border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-amber-400 outline-none"
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
             />
 
             <span
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 cursor-pointer"
+              className="absolute right-4 top-4 cursor-pointer text-gray-300"
             >
-              👁️
+              {showPassword ? "🙈" : "👁️"}
             </span>
           </div>
         </div>
 
-        {/* LOGIN BUTTON */}
-        <button
+        {/* LOGIN BUTTON (SAME AS SIGNUP STYLE) */}
+        <motion.button
+          whileTap={{ scale: 0.95 }}
           onClick={handleLogin}
           disabled={loading}
-          className="w-full mt-6 p-3 rounded bg-yellow-400 text-black font-bold flex justify-center items-center gap-2"
+          className="w-full mt-8 p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold flex justify-center items-center gap-2"
         >
           {loading ? (
-            <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+            <>
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              Logging in...
+            </>
           ) : (
             "Login"
           )}
-        </button>
+        </motion.button>
 
         {/* SIGNUP TEXT (SMALL LIKE REAL APPS) */}
-        <p className="text-center text-xs text-gray-400 mt-4">
+        <p className="text-center text-gray-400 mt-5 text-sm">
           Don’t have an account?{" "}
           <span
             onClick={() => navigate("/signup")}
-            className="text-yellow-400 cursor-pointer"
+            className="text-yellow-400 cursor-pointer hover:underline"
           >
             Signup
           </span>
         </p>
 
+        {/* FORGOT */}
         <p
           onClick={() => setShowForgot(true)}
-          className="text-center text-xs text-yellow-400 mt-3 cursor-pointer"
+          className="text-center text-yellow-400 mt-3 cursor-pointer text-sm"
         >
-          Forgot password?
+          Forgot Password?
         </p>
       </motion.div>
 
-      {/* ================= FORGOT MODAL ================= */}
+      {/* FORGOT MODAL (UNCHANGED FLOW) */}
       <AnimatePresence>
         {showForgot && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/90">
-            <div className="w-[340px] p-6 bg-white/10 rounded-xl border border-yellow-400/20">
-              <h2 className="text-center text-yellow-400 font-bold">
+            <div className="w-[360px] p-6 bg-white/10 rounded-xl border border-yellow-400/20">
+              <h2 className="text-yellow-400 text-center font-bold">
                 Reset Password
               </h2>
 
-              {/* STEP 1 */}
               {step === "email" && (
                 <>
                   <input
-                    className="w-full mt-4 p-2 bg-black/60 rounded"
+                    className="w-full mt-4 p-2 bg-black/60 rounded text-white"
                     placeholder="Email"
                     onChange={(e) => setForgotEmail(e.target.value)}
                   />
@@ -261,11 +276,10 @@ export default function Login() {
                 </>
               )}
 
-              {/* STEP 2 */}
               {step === "otp" && (
                 <>
                   <input
-                    className="w-full mt-4 p-2 bg-black/60 rounded"
+                    className="w-full mt-4 p-2 bg-black/60 rounded text-white"
                     placeholder="OTP"
                     onChange={(e) => setOtp(e.target.value)}
                   />
@@ -279,11 +293,10 @@ export default function Login() {
                 </>
               )}
 
-              {/* STEP 3 */}
               {step === "reset" && (
                 <>
                   <input
-                    className="w-full mt-4 p-2 bg-black/60 rounded"
+                    className="w-full mt-4 p-2 bg-black/60 rounded text-white"
                     placeholder="New Password"
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
