@@ -66,6 +66,9 @@ export default function Signup() {
       const data = await res.json();
 
       if (!res.ok) setError(data.message);
+      else {
+        navigate("/todos");
+      }
     } catch {
       setError("OTP failed");
     }

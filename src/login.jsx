@@ -86,15 +86,13 @@ export default function Login() {
     setLoading(false);
   };
 
-
-    setShowForgot(true);
-    setStep("email");
-    setForgotEmail("");
-    setOtp("");
-    setNewPassword("");
-    setError("");
-    setMessage("");
-  };
+  setShowForgot(true);
+  setStep("email");
+  setForgotEmail("");
+  setOtp("");
+  setNewPassword("");
+  setError("");
+  setMessage("");
 
   const sendOtp = async () => {
     setOtpLoading(true);
