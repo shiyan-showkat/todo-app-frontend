@@ -66,10 +66,6 @@ export default function Signup() {
       const data = await res.json();
 
       if (!res.ok) setError(data.message);
-      else {
-        setSuccess("Verified ✅");
-        setTimeout(() => navigate("/login"), 1000);
-      }
     } catch {
       setError("OTP failed");
     }
