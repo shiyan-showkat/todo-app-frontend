@@ -40,7 +40,6 @@ export default function Todos() {
 
       return true;
     } catch {
-      navigate("/login");
       return false;
     }
   };

@@ -86,8 +86,7 @@ export default function Login() {
     setLoading(false);
   };
 
-  // ================= FORGOT =================
-  const openForgot = () => {
+
     setShowForgot(true);
     setStep("email");
     setForgotEmail("");
