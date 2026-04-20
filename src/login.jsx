@@ -26,7 +26,6 @@ export default function Login() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // ✅ AUTH CHECK ON LOAD
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -56,7 +55,7 @@ export default function Login() {
     checkAuth();
   }, [navigate]);
 
-  // ✅ LOGIN
+  // LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -86,7 +85,6 @@ export default function Login() {
     setLoading(false);
   };
 
-  // ✅ OPEN FORGOT (FIXED)
   const openForgot = () => {
     setShowForgot(true);
     setStep("email");
@@ -97,7 +95,6 @@ export default function Login() {
     setMessage("");
   };
 
-  // SEND OTP
   const sendOtp = async () => {
     setOtpLoading(true);
     setError("");
@@ -123,7 +120,6 @@ export default function Login() {
     setOtpLoading(false);
   };
 
-  // VERIFY OTP
   const verifyOtp = async () => {
     setVerifyLoading(true);
 
@@ -148,7 +144,6 @@ export default function Login() {
     setVerifyLoading(false);
   };
 
-  // RESET PASSWORD
   const resetPassword = async () => {
     setResetLoading(true);
 
@@ -178,7 +173,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] relative overflow-hidden text-white">
-      {/* GLOW BACKGROUND (same as signup) */}
+      {/* GLOW */}
       <div className="absolute w-[600px] h-[600px] bg-cyan-400 blur-[120px] opacity-20 top-[-200px] left-[-100px] rounded-full" />
       <div className="absolute w-[500px] h-[500px] bg-cyan-300 blur-[120px] opacity-20 bottom-[-150px] right-[-50px] rounded-full" />
 
@@ -198,17 +193,26 @@ export default function Login() {
           {/* FORM */}
           <form onSubmit={handleLogin} className="space-y-6">
             {/* EMAIL */}
-            <input
-              className="w-full p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
-              placeholder="USER_ID"
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                🔐
+              </span>
+              <input
+                className="w-full pl-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
+                placeholder="USER_ID"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
             {/* PASSWORD */}
             <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                🔒
+              </span>
+
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400 pr-12"
+                className="w-full pl-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400 pr-12"
                 placeholder="Encryption Key"
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -247,7 +251,6 @@ export default function Login() {
             </p>
           </div>
 
-          {/* MESSAGES */}
           {error && <p className="text-red-400 text-center mt-4">{error}</p>}
           {message && (
             <p className="text-green-400 text-center mt-4">{message}</p>
@@ -255,7 +258,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* FORGOT MODAL */}
+      {/* FORGOT MODAL (same as before, unchanged) */}
       <AnimatePresence>
         {showForgot && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/90 z-50">
