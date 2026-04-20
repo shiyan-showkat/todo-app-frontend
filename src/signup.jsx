@@ -6,11 +6,10 @@ const API = "https://todo-app-backend-gfh3.onrender.com";
 export default function Signup() {
   const navigate = useNavigate();
 
+  const [step, setStep] = useState("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const [step, setStep] = useState("signup");
-  const [otp, setOtp] = useState(["", "", "", ""]); // ✅ 4 digit
+  const [otp, setOtp] = useState(["", "", "", ""]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -64,7 +63,7 @@ export default function Signup() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        setSuccess("OTP Verified ✅ Redirecting...");
+        setSuccess("OTP Verified ✅");
         setTimeout(() => navigate("/login"), 1200);
       }
     } catch {
@@ -75,126 +74,154 @@ export default function Signup() {
   };
 
   // OTP INPUT
-  const handleOtpChange = (value, index) => {
-    if (!/^\d?$/.test(value)) return;
+  const handleOtpChange = (val, i) => {
+    if (!/^\d?$/.test(val)) return;
 
     const newOtp = [...otp];
-    newOtp[index] = value;
+    newOtp[i] = val;
     setOtp(newOtp);
 
-    if (value && index < 3) {
-      // ✅ 3 (last index of 4 digits)
-      document.getElementById(`otp-${index + 1}`)?.focus();
+    if (val && i < 3) {
+      document.getElementById(`otp-${i + 1}`)?.focus();
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
-      {/* BACKGROUND GLOW */}
-      <div className="absolute w-[600px] h-[600px] bg-yellow-300 blur-[200px] opacity-30 top-[-200px] pointer-events-none" />
-      <div className="absolute w-[500px] h-[500px] bg-yellow-500 blur-[200px] opacity-25 bottom-[-200px] pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center relative bg-[#0e0e0e] text-white overflow-x-hidden">
+      {/* BACKGROUND */}
+      <div
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, rgba(153,247,255,0.05) 1px, transparent 0)",
+          backgroundSize: "40px 40px",
+        }}
+      />
+      <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-400 blur-[120px] opacity-30 rounded-full" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-cyan-300 blur-[120px] opacity-30 rounded-full" />
 
-      {/* CARD */}
-      <div className="relative z-10 w-[420px] p-10 rounded-3xl bg-white/10 border border-yellow-300/30 backdrop-blur-3xl">
-        <h1 className="text-3xl text-center text-yellow-300 font-bold">
-          Signup 🚀
-        </h1>
+      {/* MAIN */}
+      <div className="relative z-10 w-full max-w-md px-6 -mt-10">
+        {/* LOGO */}
+        <div className="flex flex-col items-center mb-10">
+          <h1 className="text-3xl font-black tracking-tighter text-cyan-300 uppercase drop-shadow-[0_0_12px_rgba(0,242,255,0.6)]">
+            NEON ZENITH
+          </h1>
+          <p className="text-[10px] tracking-[0.2em] text-gray-400 uppercase mt-2">
+            Neural Access Protocol v2.4
+          </p>
+        </div>
 
-        {error && (
-          <p className="text-red-400 text-center mt-3 text-sm">{error}</p>
-        )}
+        {/* CARD */}
+        <div className="bg-white/5 backdrop-blur-xl border border-cyan-400/10 p-8 rounded-lg flex flex-col gap-5 shadow-[0_0_15px_rgba(153,247,255,0.2)]">
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {success && <p className="text-green-400 text-sm">{success}</p>}
 
-        {success && (
-          <p className="text-green-400 text-center mt-3 text-sm">{success}</p>
-        )}
+          {/* SIGNUP */}
+          {step === "signup" && (
+            <>
+              <h2 className="text-xl font-semibold">Create Identity</h2>
+              <p className="text-gray-400 text-xs">
+                Initialize your neural credentials.
+              </p>
 
-        {/* SIGNUP STEP */}
-        {step === "signup" && (
-          <>
-            <input
-              placeholder="Email"
-              className="w-full mt-6 p-3 bg-black/40 text-white rounded hover:ring-2 hover:ring-yellow-300 transition"
-              onChange={(e) => setEmail(e.target.value)}
-            />
+              <input
+                type="email"
+                placeholder="user@zenith.ai"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-black border border-gray-700 rounded-md py-3 px-3 text-sm focus:border-cyan-400 outline-none"
+              />
 
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full mt-3 p-3 bg-black/40 text-white rounded hover:ring-2 hover:ring-yellow-300 transition"
-              onChange={(e) => setPassword(e.target.value)}
-            />
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-black border border-gray-700 rounded-md py-3 px-3 text-sm focus:border-cyan-400 outline-none"
+              />
 
-            <button
-              onClick={handleSignup}
-              disabled={loading}
-              className="w-full mt-6 p-3 bg-yellow-300 text-black font-bold rounded flex justify-center items-center gap-2 cursor-pointer hover:scale-[1.02] transition"
-            >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                  Sending OTP...
-                </>
-              ) : (
-                "Signup"
-              )}
-            </button>
-          </>
-        )}
+              <button
+                onClick={handleSignup}
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-cyan-400 to-cyan-600 py-3 text-black font-bold uppercase hover:scale-[1.02] active:scale-[0.98] transition"
+              >
+                {loading ? "Sending..." : "Initialize Signup"}
+              </button>
+            </>
+          )}
 
-        {/* OTP STEP */}
-        {step === "otp" && (
-          <>
-            <p className="text-center text-gray-300 mt-5">
-              Enter OTP sent to email
+          {/* OTP */}
+          {step === "otp" && (
+            <>
+              <h2 className="text-xl font-semibold">MFA Challenge</h2>
+              <p className="text-gray-400 text-xs">
+                Enter the 4-digit pulse sent to your device.
+              </p>
+
+              <div className="flex justify-between gap-3 py-3">
+                {otp.map((val, i) => (
+                  <input
+                    key={i}
+                    id={`otp-${i}`}
+                    value={val}
+                    maxLength={1}
+                    onChange={(e) => handleOtpChange(e.target.value, i)}
+                    className="w-14 h-16 text-center text-xl font-bold bg-black border border-gray-700 rounded-md text-cyan-300 focus:border-cyan-400 outline-none"
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={handleOtp}
+                disabled={loading}
+                className="w-full border border-cyan-400 text-cyan-300 py-3 uppercase hover:bg-cyan-400/10 transition"
+              >
+                {loading ? "Verifying..." : "Verify Identity"}
+              </button>
+
+              <button className="text-[10px] text-gray-400 uppercase hover:text-cyan-300 transition">
+                Resend Neural Pulse
+              </button>
+            </>
+          )}
+
+          {/* LOGIN */}
+          <div className="border-t border-gray-800 pt-3 text-center">
+            <p className="text-xs text-gray-400">
+              Already have credentials?
+              <span
+                onClick={() => navigate("/login")}
+                className="text-cyan-300 ml-1 cursor-pointer hover:underline"
+              >
+                Login
+              </span>
             </p>
+          </div>
+        </div>
 
-            <div className="flex justify-between mt-6 gap-2">
-              {otp.map((val, i) => (
-                <input
-                  key={i}
-                  id={`otp-${i}`}
-                  maxLength={1}
-                  value={val}
-                  onChange={(e) => handleOtpChange(e.target.value, i)}
-                  className="
-                    w-12 h-12 text-center text-xl font-bold
-                    bg-yellow-300/20 text-yellow-200
-                    border border-yellow-300
-                    rounded-lg
-                    focus:outline-none focus:ring-2 focus:ring-yellow-300
-                    hover:bg-yellow-300/40 transition
-                  "
-                />
-              ))}
+        {/* SMALL INFO CARDS */}
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="bg-white/5 border border-cyan-400/10 p-3 rounded-lg flex gap-2">
+            <div className="w-7 h-7 bg-cyan-400/20 flex items-center justify-center rounded-full">
+              🛡️
             </div>
+            <div>
+              <p className="text-[8px] uppercase text-gray-400">Encrypted</p>
+              <p className="text-[9px]">AES-256</p>
+            </div>
+          </div>
 
-            <button
-              onClick={handleOtp}
-              disabled={loading}
-              className="w-full mt-6 p-3 bg-green-400 text-black font-bold rounded flex justify-center items-center gap-2 cursor-pointer hover:scale-[1.02] transition"
-            >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                  Verifying...
-                </>
-              ) : (
-                "Verify OTP"
-              )}
-            </button>
-          </>
-        )}
-
-        {/* LOGIN LINK */}
-        <p className="text-center text-sm text-gray-400 mt-5">
-          Already have account?{" "}
-          <span
-            onClick={() => navigate("/login")}
-            className="text-yellow-300 cursor-pointer hover:underline"
-          >
-            Login
-          </span>
-        </p>
+          <div className="bg-white/5 border border-cyan-400/10 p-3 rounded-lg flex gap-2">
+            <div className="w-7 h-7 bg-cyan-400/20 flex items-center justify-center rounded-full">
+              ⚡
+            </div>
+            <div>
+              <p className="text-[8px] uppercase text-gray-400">Latency</p>
+              <p className="text-[9px]">0.4ms</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
