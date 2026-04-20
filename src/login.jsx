@@ -26,7 +26,6 @@ export default function Login() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // ================= AUTO LOGIN =================
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -54,7 +53,6 @@ export default function Login() {
     checkAuth();
   }, []);
 
-  // ================= LOGIN =================
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -251,6 +249,17 @@ export default function Login() {
               className="text-xs text-cyan-300 cursor-pointer"
             >
               Forgot Password?
+            </p>
+
+            {/* 🔥 ADDED SIGNUP LINK */}
+            <p className="text-xs text-gray-400 mt-3">
+              New here?{" "}
+              <span
+                onClick={() => navigate("/signup")}
+                className="text-cyan-300 cursor-pointer hover:underline"
+              >
+                Create Account
+              </span>
             </p>
           </div>
 
