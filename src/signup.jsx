@@ -15,7 +15,12 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // ================= SIGNUP =================
   const handleSignup = async () => {
+    if (!email || !password) {
+      return setError("All fields required");
+    }
+
     setLoading(true);
     setError("");
     setSuccess("");
@@ -42,12 +47,17 @@ export default function Signup() {
     setLoading(false);
   };
 
+  // ================= OTP =================
   const handleOtp = async () => {
+    const finalOtp = otp.join("");
+
+    if (finalOtp.length !== 4) {
+      return setError("Enter full OTP");
+    }
+
     setLoading(true);
     setError("");
     setSuccess("");
-
-    const finalOtp = otp.join("");
 
     try {
       const res = await fetch(`${API}/api/v1/verifyotp`, {
@@ -83,85 +93,112 @@ export default function Signup() {
     }
   };
 
+  // ================= UI =================
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] relative overflow-hidden">
-      {/* BACKGROUND */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, rgba(153,247,255,0.05) 1px, transparent 0)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+    <div className="min-h-screen flex items-center justify-center relative bg-[#0e0e0e] text-white overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(153,247,255,0.05)_1px,transparent_0)] bg-[size:40px_40px]" />
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-400 blur-[120px] opacity-30 rounded-full" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-cyan-300 blur-[120px] opacity-30 rounded-full" />
 
-      {/* CARD */}
-      <div className="relative z-10 w-full max-w-sm p-8 bg-white/5 backdrop-blur-xl border border-cyan-400/10 rounded-xl shadow-[0_0_25px_rgba(0,255,255,0.15)]">
-        {error && <p className="text-red-400 text-xs mb-2">{error}</p>}
-        {success && <p className="text-green-400 text-xs mb-2">{success}</p>}
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-md px-6">
+        <div className="bg-[#262625]/40 backdrop-blur-xl border border-cyan-400/10 rounded-xl p-10 flex flex-col gap-8 shadow-[0_0_20px_rgba(0,255,255,0.15)]">
+          {/* Messages */}
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {success && <p className="text-green-400 text-sm">{success}</p>}
 
-        {/* SIGNUP */}
-        {step === "signup" && (
-          <div className="flex flex-col gap-4">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-black border border-gray-700 px-4 py-3 rounded-md text-sm text-white focus:border-cyan-400 outline-none"
-            />
+          {/* ================= SIGNUP STEP ================= */}
+          {step === "signup" && (
+            <section className="flex flex-col gap-6">
+              <div>
+                <h2 className="text-2xl font-semibold">Create Identity</h2>
+                <p className="text-gray-400 text-sm">
+                  Initialize your secure credentials.
+                </p>
+              </div>
 
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-black border border-gray-700 px-4 py-3 rounded-md text-sm text-white focus:border-cyan-400 outline-none"
-            />
-
-            <button
-              onClick={handleSignup}
-              disabled={loading}
-              className="mt-2 py-3 rounded-md bg-gradient-to-r from-cyan-400 to-cyan-600 text-black font-bold tracking-wide 
-              shadow-[0_0_20px_rgba(0,255,255,0.4)]
-              hover:shadow-[0_0_30px_rgba(0,255,255,0.7)]
-              hover:scale-[1.03] active:scale-[0.97] transition-all"
-            >
-              {loading ? "..." : "Continue"}
-            </button>
-          </div>
-        )}
-
-        {/* OTP */}
-        {step === "otp" && (
-          <div className="flex flex-col gap-5">
-            <div className="flex justify-between gap-2">
-              {otp.map((val, i) => (
+              {/* Email */}
+              <div>
+                <label className="text-xs text-gray-400 uppercase">
+                  Email Address
+                </label>
                 <input
-                  key={i}
-                  id={`otp-${i}`}
-                  value={val}
-                  maxLength={1}
-                  onChange={(e) => handleOtpChange(e.target.value, i)}
-                  className="w-12 h-14 text-center text-xl font-bold bg-black border border-gray-700 rounded-md text-cyan-300 focus:border-cyan-400 outline-none"
+                  type="email"
+                  placeholder="name@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mt-2 w-full bg-black border border-gray-700 px-4 py-3 rounded-md text-sm focus:border-cyan-400 outline-none"
                 />
-              ))}
-            </div>
+              </div>
 
-            <button
-              onClick={handleOtp}
-              disabled={loading}
-              className="py-3 rounded-md border border-cyan-400 text-cyan-300 font-bold tracking-wide
-              shadow-[0_0_15px_rgba(0,255,255,0.2)]
-              hover:bg-cyan-400/10 hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]
-              hover:scale-[1.03] active:scale-[0.97] transition-all"
+              {/* Password */}
+              <div>
+                <label className="text-xs text-gray-400 uppercase">
+                  Access Key
+                </label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-2 w-full bg-black border border-gray-700 px-4 py-3 rounded-md text-sm focus:border-cyan-400 outline-none"
+                />
+              </div>
+
+              {/* Button */}
+              <button
+                onClick={handleSignup}
+                disabled={loading}
+                className="mt-4 py-4 rounded-xl bg-gradient-to-r from-cyan-300 to-cyan-500 text-black font-bold tracking-widest
+                shadow-[0_0_25px_rgba(0,255,255,0.4)]
+                hover:scale-[1.03] active:scale-[0.97] transition-all"
+              >
+                {loading ? "..." : "Create Account"}
+              </button>
+            </section>
+          )}
+
+          {/* ================= OTP STEP ================= */}
+          {step === "otp" && (
+            <section className="flex flex-col gap-6">
+              <h2 className="text-xl font-semibold text-center">Enter OTP</h2>
+
+              <div className="flex justify-between gap-2">
+                {otp.map((val, i) => (
+                  <input
+                    key={i}
+                    id={`otp-${i}`}
+                    value={val}
+                    maxLength={1}
+                    onChange={(e) => handleOtpChange(e.target.value, i)}
+                    className="w-14 h-14 text-center text-xl font-bold bg-black border border-gray-700 rounded-md text-cyan-300 focus:border-cyan-400 outline-none"
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={handleOtp}
+                disabled={loading}
+                className="py-3 rounded-md border border-cyan-400 text-cyan-300 font-bold tracking-wide
+                hover:bg-cyan-400/10 transition-all"
+              >
+                {loading ? "..." : "Verify"}
+              </button>
+            </section>
+          )}
+
+          {/* Footer */}
+          <div className="text-center border-t border-gray-700 pt-6 text-sm text-gray-400">
+            Already have credentials?
+            <span
+              onClick={() => navigate("/login")}
+              className="text-cyan-300 ml-2 cursor-pointer hover:underline"
             >
-              {loading ? "..." : "Verify"}
-            </button>
+              Login
+            </span>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
