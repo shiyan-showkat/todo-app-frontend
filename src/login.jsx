@@ -99,13 +99,14 @@ export default function Login() {
     setMessage("");
   };
 
+  // ✅ FIXED ENDPOINT
   const sendOtp = async () => {
     setError("");
     setMessage("");
     setOtpLoading(true);
 
     try {
-      const res = await fetch(`${API}/api/v1/forgotPasswordOtp`, {
+      const res = await fetch(`${API}/api/v1/forgot-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: forgotEmail }),
@@ -125,13 +126,14 @@ export default function Login() {
     setOtpLoading(false);
   };
 
+  // ✅ FIXED ENDPOINT
   const verifyOtp = async () => {
     setError("");
     setMessage("");
     setVerifyLoading(true);
 
     try {
-      const res = await fetch(`${API}/api/v1/verifyForgotOtp`, {
+      const res = await fetch(`${API}/api/v1/verify-forgot-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: forgotEmail, otp }),
@@ -151,13 +153,14 @@ export default function Login() {
     setVerifyLoading(false);
   };
 
+  // ✅ FIXED ENDPOINT
   const resetPassword = async () => {
     setError("");
     setMessage("");
     setResetLoading(true);
 
     try {
-      const res = await fetch(`${API}/api/v1/resetPassword`, {
+      const res = await fetch(`${API}/api/v1/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -233,16 +236,19 @@ export default function Login() {
         </p>
       </motion.div>
 
-      {/* MODAL */}
+      {/* FORGOT MODAL */}
       <AnimatePresence>
         {showForgot && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/90">
             <div className="w-[350px] p-6 bg-white/10 rounded-xl border border-yellow-400/20">
+              {error && <p className="text-red-400 text-sm">{error}</p>}
+              {message && <p className="text-green-400 text-sm">{message}</p>}
+
               {step === "email" && (
                 <>
                   <input
                     placeholder="Email"
-                    className="w-full p-2 bg-black/60 text-white"
+                    className="w-full p-2 bg-black/60 text-white mt-3"
                     onChange={(e) => setForgotEmail(e.target.value)}
                   />
                   <button
@@ -258,7 +264,7 @@ export default function Login() {
                 <>
                   <input
                     placeholder="OTP"
-                    className="w-full p-2 bg-black/60 text-white"
+                    className="w-full p-2 bg-black/60 text-white mt-3"
                     onChange={(e) => setOtp(e.target.value)}
                   />
                   <button
@@ -274,7 +280,7 @@ export default function Login() {
                 <>
                   <input
                     placeholder="New Password"
-                    className="w-full p-2 bg-black/60 text-white"
+                    className="w-full p-2 bg-black/60 text-white mt-3"
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <button
@@ -288,7 +294,7 @@ export default function Login() {
 
               <button
                 onClick={() => setShowForgot(false)}
-                className="w-full mt-3 text-gray-300"
+                className="w-full mt-4 text-gray-300"
               >
                 Close
               </button>
