@@ -113,7 +113,6 @@ export default function Signup() {
             <p className="text-green-400 text-center mb-4">{success}</p>
           )}
 
-          {/* ================= SIGNUP ================= */}
           {step === "signup" && (
             <div className="space-y-6">
               {/* EMAIL */}
@@ -169,7 +168,6 @@ export default function Signup() {
             </div>
           )}
 
-          {/* ================= OTP ================= */}
           {step === "otp" && (
             <div className="space-y-6 text-center">
               <p className="text-gray-400 text-sm">Enter OTP</p>
@@ -196,7 +194,6 @@ export default function Signup() {
             </div>
           )}
 
-          {/* FOOTER */}
           <div className="mt-8 text-center text-xs text-gray-400">
             Already have account?{" "}
             <span

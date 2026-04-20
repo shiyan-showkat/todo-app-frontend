@@ -173,7 +173,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] text-white relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] relative overflow-hidden text-white">
       {/* glow */}
       <div className="absolute w-[600px] h-[600px] bg-cyan-400 blur-[120px] opacity-20 top-[-200px] left-[-100px] rounded-full" />
       <div className="absolute w-[500px] h-[500px] bg-cyan-300 blur-[120px] opacity-20 bottom-[-150px] right-[-50px] rounded-full" />
@@ -186,7 +186,7 @@ export default function Login() {
             <h1 className="text-5xl font-extrabold bg-gradient-to-b from-white to-cyan-300 bg-clip-text text-transparent">
               Initialize
             </h1>
-            <p className="text-gray-400 text-xs mt-2 tracking-widest uppercase">
+            <p className="text-gray-400 text-xs mt-2 uppercase tracking-widest">
               Secure Login Access
             </p>
           </div>
@@ -194,50 +194,54 @@ export default function Login() {
           {/* FORM */}
           <form onSubmit={handleLogin} className="space-y-6">
             {/* EMAIL */}
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2">
-                🧑‍💻
-              </span>
-
-              <label className="text-[10px] text-gray-400 uppercase">
+            <div>
+              <label className="text-[10px] uppercase text-gray-400">
                 Identity
               </label>
 
-              <input
-                className="w-full mt-2 pl-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
-                placeholder="Enter your identity"
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <div className="relative mt-2">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                  🔐
+                </span>
+
+                <input
+                  className="w-full pl-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
+                  placeholder="Enter your email"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
             </div>
 
             {/* PASSWORD */}
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2">
-                🔒
-              </span>
-
-              <label className="text-[10px] text-gray-400 uppercase">
-                Encryption Key
+            <div>
+              <label className="text-[10px] uppercase text-gray-400">
+                Password
               </label>
 
-              <input
-                type={showPassword ? "text" : "password"}
-                className="w-full mt-2 pl-12 pr-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
-                placeholder="Enter encryption key"
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative mt-2">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                  🔒
+                </span>
 
-              <span
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-10 cursor-pointer"
-              >
-                {showPassword ? "🙈" : "👁"}
-              </span>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="w-full pl-12 pr-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
+                  placeholder="Enter password"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 cursor-pointer"
+                >
+                  {showPassword ? "🙈" : "👁"}
+                </span>
+              </div>
             </div>
 
             {/* BUTTON */}
             <button className="w-full border-2 border-cyan-400 text-cyan-300 py-4 text-xs font-bold tracking-widest hover:bg-cyan-400/10 transition cursor-pointer">
-              {loading ? "Loading..." : "Authorize Login"}
+              {loading ? "Loading..." : "Login"}
             </button>
           </form>
 
@@ -261,7 +265,7 @@ export default function Login() {
             </p>
           </div>
 
-          {/* messages */}
+          {/* MESSAGES */}
           {error && <p className="text-red-400 text-center mt-4">{error}</p>}
           {message && (
             <p className="text-green-400 text-center mt-4">{message}</p>
@@ -269,7 +273,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* FORGOT MODAL */}
+      {/* FORGOT MODAL (same logic unchanged) */}
       <AnimatePresence>
         {showForgot && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/90 z-50">
@@ -277,7 +281,7 @@ export default function Login() {
               {step === "email" && (
                 <>
                   <input
-                    placeholder="Enter Email"
+                    placeholder="Email"
                     className="w-full p-2 bg-black text-white"
                     onChange={(e) => setForgotEmail(e.target.value)}
                   />
@@ -293,7 +297,7 @@ export default function Login() {
               {step === "otp" && (
                 <>
                   <input
-                    placeholder="Enter OTP"
+                    placeholder="OTP"
                     className="w-full p-2 bg-black text-white"
                     onChange={(e) => setOtp(e.target.value)}
                   />
@@ -301,7 +305,7 @@ export default function Login() {
                     onClick={verifyOtp}
                     className="w-full mt-3 bg-green-400 p-2 cursor-pointer"
                   >
-                    {verifyLoading ? "Checking..." : "Verify OTP"}
+                    {verifyLoading ? "Checking..." : "Verify"}
                   </button>
                 </>
               )}
@@ -317,7 +321,7 @@ export default function Login() {
                     onClick={resetPassword}
                     className="w-full mt-3 bg-blue-400 p-2 cursor-pointer"
                   >
-                    {resetLoading ? "Updating..." : "Reset Password"}
+                    {resetLoading ? "Updating..." : "Reset"}
                   </button>
                 </>
               )}
