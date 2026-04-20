@@ -45,11 +45,20 @@ function Home() {
     checkAuth();
   }, []);
 
+  // 🔥 SEXY LOADER
   if (loading) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center bg-black text-white">
-        <div className="w-10 h-10 border-4 border-gray-500 border-t-white rounded-full animate-spin"></div>
-        <p className="mt-4 text-sm text-gray-300">Checking session...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
+        {/* LOGO TEXT */}
+        <h1 className="text-4xl font-bold tracking-wide bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent">
+          Shiyan
+        </h1>
+
+        {/* SUBTLE LINE ANIMATION */}
+        <div className="mt-2 w-16 h-[2px] bg-yellow-400 rounded-full animate-pulse"></div>
+
+        {/* LOADING TEXT */}
+        <p className="mt-6 text-xs text-gray-400 tracking-widest">LOADING...</p>
       </div>
     );
   }

@@ -10,7 +10,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
 
   const [step, setStep] = useState("signup");
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", ""]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -82,7 +82,8 @@ export default function Signup() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    if (value && index < 5) {
+    if (value && index < 3) {
+      // ✅ 3 (last index of 4 digits)
       document.getElementById(`otp-${index + 1}`)?.focus();
     }
   };

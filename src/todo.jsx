@@ -11,7 +11,6 @@ export default function Todos() {
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 🔥 FETCH TODOS (with refresh handling)
   const fetchTodos = async () => {
     try {
       setLoading(true);
@@ -31,7 +30,6 @@ export default function Todos() {
           return;
         }
 
-        // retry todos
         res = await fetch(`${API}/api/v1/gettodos`, {
           credentials: "include",
         });
@@ -73,7 +71,6 @@ export default function Todos() {
     setLoading(false);
   };
 
-  // 🗑 DELETE TODO
   const handleDelete = async (id) => {
     setLoading(true);
 
@@ -86,7 +83,6 @@ export default function Todos() {
     setLoading(false);
   };
 
-  // 🚪 LOGOUT
   const handleLogout = async () => {
     await fetch(`${API}/api/v1/logout`, {
       method: "POST",
