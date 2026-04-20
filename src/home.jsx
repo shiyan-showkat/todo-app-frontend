@@ -7,7 +7,6 @@ function Home() {
 
   const [loading, setLoading] = useState(true);
 
-  // ================= AUTH CHECK =================
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -15,7 +14,6 @@ function Home() {
           credentials: "include",
         });
 
-        // token expired → refresh
         if (res.status === 401) {
           const refreshRes = await fetch(`${API}/api/v1/newrefreshtoken`, {
             method: "POST",
@@ -47,7 +45,6 @@ function Home() {
     checkAuth();
   }, [navigate]);
 
-  // ================= LOADING SCREEN =================
   if (loading) {
     return (
       <div className="min-h-screen bg-black overflow-hidden flex items-center justify-center relative">
@@ -55,7 +52,6 @@ function Home() {
         <div className="absolute w-[500px] h-[500px] bg-cyan-400/10 blur-[120px] rounded-full top-[-100px] left-[-100px] animate-pulse" />
         <div className="absolute w-[400px] h-[400px] bg-purple-500/10 blur-[120px] rounded-full bottom-[-120px] right-[-100px] animate-pulse" />
 
-        {/* GRID EFFECT */}
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -65,7 +61,6 @@ function Home() {
           }}
         />
 
-        {/* CENTER CONTENT */}
         <div className="text-center z-10">
           {/* LOGO */}
           <h1 className="text-6xl md:text-8xl font-extrabold tracking-[-0.05em] bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-transparent animate-pulse">

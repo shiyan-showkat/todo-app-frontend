@@ -11,7 +11,6 @@ export default function Todos() {
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ================= AUTH =================
   const checkAuth = async () => {
     try {
       let res = await fetch(`${API}/api/v1/me`, {
@@ -46,7 +45,6 @@ export default function Todos() {
     }
   };
 
-  // ================= FETCH TODOS =================
   const fetchTodos = async () => {
     try {
       setLoading(true);
@@ -88,7 +86,6 @@ export default function Todos() {
     init();
   }, []);
 
-  // ================= ADD / UPDATE =================
   const handleAdd = async () => {
     if (!text.trim()) return;
 
@@ -111,7 +108,6 @@ export default function Todos() {
     setLoading(false);
   };
 
-  // ================= DELETE =================
   const handleDelete = async (id) => {
     setLoading(true);
 
@@ -124,7 +120,6 @@ export default function Todos() {
     setLoading(false);
   };
 
-  // ================= LOGOUT =================
   const handleLogout = async () => {
     await fetch(`${API}/api/v1/logout`, {
       method: "POST",
@@ -135,87 +130,70 @@ export default function Todos() {
   };
 
   return (
-    <div className="bg-[#0e0e0e] text-white min-h-screen flex">
-      {/* ================= SIDEBAR ================= */}
-      <aside className="w-64 bg-black border-r border-white/5 flex flex-col pt-10">
-        <div className="px-6 mb-10">
-          <h2 className="text-lg font-bold">Workspace</h2>
-          <p className="text-xs text-gray-500">Precision Mode</p>
-        </div>
+    <div className="min-h-screen bg-[#0e0e0e] text-white px-4 py-8 flex justify-center">
+      <div className="w-full max-w-3xl">
+        {/* HEADER */}
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold">
+            LUMINA <span className="text-cyan-400">Todos</span>
+          </h1>
+          <p className="text-gray-400 mt-2 text-sm md:text-base">
+            Your productivity hub is live ⚡
+          </p>
 
-        <nav className="flex-1 space-y-2">
-          <div className="px-6 py-3 bg-cyan-500/10 text-cyan-400">
-            Dashboard
-          </div>
-          <div className="px-6 py-3 text-gray-400">Tasks</div>
-          <div className="px-6 py-3 text-gray-400">Notes</div>
-        </nav>
-
-        <div className="p-6">
           <button
             onClick={handleLogout}
-            className="w-full bg-red-500/20 hover:bg-red-500/40 text-red-300 py-2 rounded"
+            className="mt-4 text-sm text-red-400 hover:text-red-300 cursor-pointer"
           >
             Logout
           </button>
         </div>
-      </aside>
 
-      {/* ================= MAIN ================= */}
-      <main className="flex-1 p-10">
-        {/* HERO */}
-        <div className="mb-10">
-          <h1 className="text-5xl font-extrabold">
-            Welcome back, <span className="text-cyan-400">Shiyan</span>
-          </h1>
-          <p className="text-gray-400 mt-3">
-            Your high-precision productivity hub is ready 🚀
-          </p>
-        </div>
-
-        {/* INPUT BAR */}
-        <div className="flex gap-3 mb-8">
+        {/* INPUT */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-8">
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Write your task..."
-            className="flex-1 p-4 bg-[#1a1a1a] border border-white/10 rounded outline-none"
+            className="flex-1 p-4 bg-[#1a1a1a] border border-white/10 rounded-xl outline-none focus:border-cyan-400 transition cursor-text"
           />
 
           <button
             onClick={handleAdd}
-            className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-6 font-bold rounded"
+            className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-6 py-3 font-bold rounded-xl cursor-pointer hover:scale-105 active:scale-95 transition"
           >
             {editId ? "Update" : "Add"}
           </button>
         </div>
 
         {/* LOADING */}
-        {loading && <p className="text-gray-400">Loading...</p>}
+        {loading && (
+          <p className="text-gray-400 text-center mb-4">Loading...</p>
+        )}
 
-        {/* TASKS GRID (NEW LUMINA STYLE) */}
-        <div className="grid md:grid-cols-2 gap-5">
+        {/* TODOS */}
+        <div className="grid gap-4 sm:grid-cols-2">
           {todos.map((t) => (
             <div
               key={t._id}
-              className="bg-[#1a1a1a] border border-white/5 p-5 rounded-xl hover:border-cyan-400/30 transition"
+              className="bg-[#1a1a1a] border border-white/5 p-5 rounded-xl hover:border-cyan-400/40 transition group"
             >
-              <p className="text-white text-lg">{t.text}</p>
+              <p className="text-white text-lg break-words">{t.text}</p>
 
-              <div className="flex justify-end gap-3 mt-4">
+              <div className="flex justify-end gap-4 mt-4">
                 <button
                   onClick={() => {
                     setText(t.text);
                     setEditId(t._id);
                   }}
-                  className="text-cyan-400 text-sm"
+                  className="text-cyan-400 hover:text-cyan-300 text-sm cursor-pointer transition"
                 >
                   Edit
                 </button>
 
                 <button
                   onClick={() => handleDelete(t._id)}
-                  className="text-red-400 text-sm"
+                  className="text-red-400 hover:text-red-300 text-sm cursor-pointer transition"
                 >
                   Delete
                 </button>
@@ -225,9 +203,11 @@ export default function Todos() {
         </div>
 
         {!loading && todos.length === 0 && (
-          <p className="text-gray-500 mt-6">No tasks yet</p>
+          <p className="text-gray-500 mt-8 text-center">
+            No tasks yet — start building 🚀
+          </p>
         )}
-      </main>
+      </div>
     </div>
   );
 }

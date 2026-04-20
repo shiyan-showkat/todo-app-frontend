@@ -17,11 +17,8 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // ================= SIGNUP =================
   const handleSignup = async () => {
-    if (!email || !password) {
-      return setError("All fields required");
-    }
+    if (!email || !password) return setError("All fields required");
 
     setLoading(true);
     setError("");
@@ -36,9 +33,8 @@ export default function Signup() {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.message);
-      } else {
+      if (!res.ok) setError(data.message);
+      else {
         setSuccess("OTP sent 📩");
         setStep("otp");
       }
@@ -49,13 +45,10 @@ export default function Signup() {
     setLoading(false);
   };
 
-  // ================= OTP =================
   const handleOtp = async () => {
     const finalOtp = otp.join("");
 
-    if (finalOtp.length !== 4) {
-      return setError("Enter full OTP");
-    }
+    if (finalOtp.length !== 4) return setError("Enter full OTP");
 
     setLoading(true);
     setError("");
@@ -70,11 +63,10 @@ export default function Signup() {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.message);
-      } else {
+      if (!res.ok) setError(data.message);
+      else {
         setSuccess("Verified ✅");
-        setTimeout(() => navigate("/login"), 1200);
+        setTimeout(() => navigate("/login"), 1000);
       }
     } catch {
       setError("OTP failed");
@@ -96,72 +88,90 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative bg-[#0e0e0e] text-white overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(153,247,255,0.05)_1px,transparent_0)] bg-[size:40px_40px]" />
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-400 blur-[120px] opacity-30 rounded-full" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-cyan-300 blur-[120px] opacity-30 rounded-full" />
+    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] relative overflow-hidden text-white">
+      {/* Glow Orbs (same as login) */}
+      <div className="absolute w-[600px] h-[600px] bg-cyan-400 blur-[120px] opacity-20 top-[-200px] left-[-100px] rounded-full" />
+      <div className="absolute w-[500px] h-[500px] bg-cyan-300 blur-[120px] opacity-20 bottom-[-150px] right-[-50px] rounded-full" />
 
-      {/* Card */}
-      <div className="relative z-10 w-full max-w-md px-6">
-        <div className="bg-[#262625]/40 backdrop-blur-xl border border-cyan-400/10 rounded-xl p-10 flex flex-col gap-8 shadow-[0_0_20px_rgba(0,255,255,0.15)]">
-          {/* Messages */}
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          {success && <p className="text-green-400 text-sm">{success}</p>}
+      {/* CARD */}
+      <div className="w-full max-w-[440px] z-10">
+        <div className="bg-[#262625]/40 backdrop-blur-2xl border border-cyan-400/10 p-10 rounded-lg shadow-2xl">
+          {/* HEADER */}
+          <div className="text-center mb-10">
+            <h1 className="text-5xl font-extrabold bg-gradient-to-b from-white to-cyan-300 bg-clip-text text-transparent">
+              Initialize
+            </h1>
+            <p className="text-gray-400 text-xs uppercase tracking-widest mt-2">
+              Create Secure Identity
+            </p>
+          </div>
+
+          {/* ERROR / SUCCESS */}
+          {error && <p className="text-red-400 text-center mb-4">{error}</p>}
+          {success && (
+            <p className="text-green-400 text-center mb-4">{success}</p>
+          )}
 
           {/* ================= SIGNUP ================= */}
           {step === "signup" && (
-            <div className="flex flex-col gap-6">
+            <div className="space-y-6">
+              {/* EMAIL */}
               <div>
-                <h2 className="text-2xl font-semibold">Create Identity</h2>
-                <p className="text-gray-400 text-sm">
-                  Initialize your secure credentials.
-                </p>
+                <label className="text-[10px] uppercase text-gray-400">
+                  Identity
+                </label>
+                <div className="relative mt-2">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                    🔐
+                  </span>
+                  <input
+                    className="w-full pl-12 pr-4 py-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
+                    placeholder="USER_ID"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
               </div>
 
-              {/* Email */}
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-black border border-gray-700 px-4 py-3 rounded-md text-sm focus:border-cyan-400 outline-none"
-              />
+              {/* PASSWORD */}
+              <div>
+                <label className="text-[10px] uppercase text-gray-400">
+                  Encryption Key
+                </label>
+                <div className="relative mt-2">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2">
+                    🔒
+                  </span>
 
-              {/* Password with Eye */}
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-black border border-gray-700 px-4 py-3 pr-10 rounded-md text-sm focus:border-cyan-400 outline-none"
-                />
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-                >
-                  {showPassword ? "🙈" : "👁"}
-                </span>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="w-full pl-12 pr-12 py-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
+                    placeholder="••••••••"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+                  >
+                    {showPassword ? "🙈" : "👁"}
+                  </span>
+                </div>
               </div>
 
-              {/* Button */}
+              {/* BUTTON */}
               <button
                 onClick={handleSignup}
-                disabled={loading}
-                className="py-4 rounded-xl bg-gradient-to-r from-cyan-300 to-cyan-500 text-black font-bold tracking-widest cursor-pointer
-                shadow-[0_0_25px_rgba(0,255,255,0.4)]
-                hover:scale-[1.03] active:scale-[0.97] transition-all"
+                className="w-full border-2 border-cyan-400 text-cyan-300 py-4 text-xs font-bold tracking-widest hover:bg-cyan-400/10 transition cursor-pointer"
               >
-                {loading ? "..." : "Create Account"}
+                {loading ? "Loading..." : "Create Account"}
               </button>
             </div>
           )}
 
           {/* ================= OTP ================= */}
           {step === "otp" && (
-            <div className="flex flex-col gap-6">
-              <h2 className="text-xl font-semibold text-center">Enter OTP</h2>
+            <div className="space-y-6 text-center">
+              <p className="text-gray-400 text-sm">Enter OTP</p>
 
               <div className="flex justify-between gap-2">
                 {otp.map((val, i) => (
@@ -171,28 +181,26 @@ export default function Signup() {
                     value={val}
                     maxLength={1}
                     onChange={(e) => handleOtpChange(e.target.value, i)}
-                    className="w-14 h-14 text-center text-xl font-bold bg-black border border-gray-700 rounded-md text-cyan-300 focus:border-cyan-400 outline-none"
+                    className="w-14 h-14 text-center text-xl bg-black border border-gray-700 rounded text-cyan-300 focus:border-cyan-400 outline-none"
                   />
                 ))}
               </div>
 
               <button
                 onClick={handleOtp}
-                disabled={loading}
-                className="py-3 rounded-md border border-cyan-400 text-cyan-300 font-bold cursor-pointer
-                hover:bg-cyan-400/10 transition-all"
+                className="w-full border border-cyan-400 text-cyan-300 py-3 font-bold cursor-pointer hover:bg-cyan-400/10 transition"
               >
-                {loading ? "..." : "Verify"}
+                {loading ? "..." : "Verify OTP"}
               </button>
             </div>
           )}
 
-          {/* Footer */}
-          <div className="text-center border-t border-gray-700 pt-6 text-sm text-gray-400">
-            Already have credentials?
+          {/* FOOTER */}
+          <div className="mt-8 text-center text-xs text-gray-400">
+            Already have account?{" "}
             <span
               onClick={() => navigate("/login")}
-              className="text-cyan-300 ml-2 cursor-pointer hover:underline"
+              className="text-cyan-300 cursor-pointer hover:underline"
             >
               Login
             </span>
