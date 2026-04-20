@@ -26,6 +26,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  // AUTH CHECK
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -172,20 +173,20 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] relative overflow-hidden text-white">
-      {/* GLOW */}
+    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] text-white relative overflow-hidden">
+      {/* glow */}
       <div className="absolute w-[600px] h-[600px] bg-cyan-400 blur-[120px] opacity-20 top-[-200px] left-[-100px] rounded-full" />
       <div className="absolute w-[500px] h-[500px] bg-cyan-300 blur-[120px] opacity-20 bottom-[-150px] right-[-50px] rounded-full" />
 
       {/* CARD */}
       <div className="w-full max-w-[440px] z-10">
-        <div className="bg-[#262625]/40 backdrop-blur-2xl border border-cyan-400/10 p-10 rounded-lg shadow-2xl">
-          {/* HEADER */}
+        <div className="bg-[#262625]/40 backdrop-blur-2xl border border-cyan-400/10 p-10 rounded-xl shadow-2xl">
+          {/* TITLE */}
           <div className="text-center mb-10">
             <h1 className="text-5xl font-extrabold bg-gradient-to-b from-white to-cyan-300 bg-clip-text text-transparent">
               Initialize
             </h1>
-            <p className="text-gray-400 text-xs uppercase tracking-widest mt-2">
+            <p className="text-gray-400 text-xs mt-2 tracking-widest uppercase">
               Secure Login Access
             </p>
           </div>
@@ -195,11 +196,16 @@ export default function Login() {
             {/* EMAIL */}
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2">
-                🔐
+                🧑‍💻
               </span>
+
+              <label className="text-[10px] text-gray-400 uppercase">
+                Identity
+              </label>
+
               <input
-                className="w-full pl-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
-                placeholder="USER_ID"
+                className="w-full mt-2 pl-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
+                placeholder="Enter your identity"
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
@@ -210,16 +216,20 @@ export default function Login() {
                 🔒
               </span>
 
+              <label className="text-[10px] text-gray-400 uppercase">
+                Encryption Key
+              </label>
+
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full pl-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400 pr-12"
-                placeholder="Encryption Key"
+                className="w-full mt-2 pl-12 pr-12 p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
+                placeholder="Enter encryption key"
                 onChange={(e) => setPassword(e.target.value)}
               />
 
               <span
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 cursor-pointer"
+                className="absolute right-3 top-10 cursor-pointer"
               >
                 {showPassword ? "🙈" : "👁"}
               </span>
@@ -232,7 +242,7 @@ export default function Login() {
           </form>
 
           {/* LINKS */}
-          <div className="mt-8 text-center text-xs">
+          <div className="text-center mt-8 text-xs">
             <p
               onClick={openForgot}
               className="text-cyan-300 cursor-pointer hover:underline"
@@ -251,6 +261,7 @@ export default function Login() {
             </p>
           </div>
 
+          {/* messages */}
           {error && <p className="text-red-400 text-center mt-4">{error}</p>}
           {message && (
             <p className="text-green-400 text-center mt-4">{message}</p>
@@ -258,7 +269,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* FORGOT MODAL (same as before, unchanged) */}
+      {/* FORGOT MODAL */}
       <AnimatePresence>
         {showForgot && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/90 z-50">
@@ -266,7 +277,7 @@ export default function Login() {
               {step === "email" && (
                 <>
                   <input
-                    placeholder="Email"
+                    placeholder="Enter Email"
                     className="w-full p-2 bg-black text-white"
                     onChange={(e) => setForgotEmail(e.target.value)}
                   />
@@ -282,7 +293,7 @@ export default function Login() {
               {step === "otp" && (
                 <>
                   <input
-                    placeholder="OTP"
+                    placeholder="Enter OTP"
                     className="w-full p-2 bg-black text-white"
                     onChange={(e) => setOtp(e.target.value)}
                   />
@@ -290,7 +301,7 @@ export default function Login() {
                     onClick={verifyOtp}
                     className="w-full mt-3 bg-green-400 p-2 cursor-pointer"
                   >
-                    {verifyLoading ? "Checking..." : "Verify"}
+                    {verifyLoading ? "Checking..." : "Verify OTP"}
                   </button>
                 </>
               )}
@@ -306,7 +317,7 @@ export default function Login() {
                     onClick={resetPassword}
                     className="w-full mt-3 bg-blue-400 p-2 cursor-pointer"
                   >
-                    {resetLoading ? "Updating..." : "Reset"}
+                    {resetLoading ? "Updating..." : "Reset Password"}
                   </button>
                 </>
               )}
