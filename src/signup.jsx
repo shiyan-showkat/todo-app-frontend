@@ -15,7 +15,6 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // SIGNUP
   const handleSignup = async () => {
     setLoading(true);
     setError("");
@@ -33,7 +32,7 @@ export default function Signup() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        setSuccess("OTP sent to email 📩");
+        setSuccess("OTP sent 📩");
         setStep("otp");
       }
     } catch {
@@ -43,7 +42,6 @@ export default function Signup() {
     setLoading(false);
   };
 
-  // OTP VERIFY
   const handleOtp = async () => {
     setLoading(true);
     setError("");
@@ -63,17 +61,16 @@ export default function Signup() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        setSuccess("OTP Verified ✅");
+        setSuccess("Verified ✅");
         setTimeout(() => navigate("/login"), 1200);
       }
     } catch {
-      setError("OTP verification failed");
+      setError("OTP failed");
     }
 
     setLoading(false);
   };
 
-  // OTP INPUT
   const handleOtpChange = (val, i) => {
     if (!/^\d?$/.test(val)) return;
 
@@ -87,141 +84,84 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative bg-[#0e0e0e] text-white overflow-x-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] relative overflow-hidden">
       {/* BACKGROUND */}
       <div
-        className="fixed inset-0 z-0"
+        className="absolute inset-0"
         style={{
           backgroundImage:
             "radial-gradient(circle at 1px 1px, rgba(153,247,255,0.05) 1px, transparent 0)",
           backgroundSize: "40px 40px",
         }}
       />
-      <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-400 blur-[120px] opacity-30 rounded-full" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-cyan-300 blur-[120px] opacity-30 rounded-full" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-400 blur-[120px] opacity-30 rounded-full" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-cyan-300 blur-[120px] opacity-30 rounded-full" />
 
-      {/* MAIN */}
-      <div className="relative z-10 w-full max-w-md px-6 -mt-10">
-        {/* LOGO */}
-        <div className="flex flex-col items-center mb-10">
-          <h1 className="text-3xl font-black tracking-tighter text-cyan-300 uppercase drop-shadow-[0_0_12px_rgba(0,242,255,0.6)]">
-            NEON ZENITH
-          </h1>
-          <p className="text-[10px] tracking-[0.2em] text-gray-400 uppercase mt-2">
-            Neural Access Protocol v2.4
-          </p>
-        </div>
+      {/* CARD */}
+      <div className="relative z-10 w-full max-w-sm p-8 bg-white/5 backdrop-blur-xl border border-cyan-400/10 rounded-xl shadow-[0_0_25px_rgba(0,255,255,0.15)]">
+        {error && <p className="text-red-400 text-xs mb-2">{error}</p>}
+        {success && <p className="text-green-400 text-xs mb-2">{success}</p>}
 
-        {/* CARD */}
-        <div className="bg-white/5 backdrop-blur-xl border border-cyan-400/10 p-8 rounded-lg flex flex-col gap-5 shadow-[0_0_15px_rgba(153,247,255,0.2)]">
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          {success && <p className="text-green-400 text-sm">{success}</p>}
+        {/* SIGNUP */}
+        {step === "signup" && (
+          <div className="flex flex-col gap-4">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-black border border-gray-700 px-4 py-3 rounded-md text-sm text-white focus:border-cyan-400 outline-none"
+            />
 
-          {/* SIGNUP */}
-          {step === "signup" && (
-            <>
-              <h2 className="text-xl font-semibold">Create Identity</h2>
-              <p className="text-gray-400 text-xs">
-                Initialize your neural credentials.
-              </p>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-black border border-gray-700 px-4 py-3 rounded-md text-sm text-white focus:border-cyan-400 outline-none"
+            />
 
-              <input
-                type="email"
-                placeholder="user@zenith.ai"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-black border border-gray-700 rounded-md py-3 px-3 text-sm focus:border-cyan-400 outline-none"
-              />
-
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-black border border-gray-700 rounded-md py-3 px-3 text-sm focus:border-cyan-400 outline-none"
-              />
-
-              <button
-                onClick={handleSignup}
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-cyan-400 to-cyan-600 py-3 text-black font-bold uppercase hover:scale-[1.02] active:scale-[0.98] transition"
-              >
-                {loading ? "Sending..." : "Initialize Signup"}
-              </button>
-            </>
-          )}
-
-          {/* OTP */}
-          {step === "otp" && (
-            <>
-              <h2 className="text-xl font-semibold">MFA Challenge</h2>
-              <p className="text-gray-400 text-xs">
-                Enter the 4-digit pulse sent to your device.
-              </p>
-
-              <div className="flex justify-between gap-3 py-3">
-                {otp.map((val, i) => (
-                  <input
-                    key={i}
-                    id={`otp-${i}`}
-                    value={val}
-                    maxLength={1}
-                    onChange={(e) => handleOtpChange(e.target.value, i)}
-                    className="w-14 h-16 text-center text-xl font-bold bg-black border border-gray-700 rounded-md text-cyan-300 focus:border-cyan-400 outline-none"
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={handleOtp}
-                disabled={loading}
-                className="w-full border border-cyan-400 text-cyan-300 py-3 uppercase hover:bg-cyan-400/10 transition"
-              >
-                {loading ? "Verifying..." : "Verify Identity"}
-              </button>
-
-              <button className="text-[10px] text-gray-400 uppercase hover:text-cyan-300 transition">
-                Resend Neural Pulse
-              </button>
-            </>
-          )}
-
-          {/* LOGIN */}
-          <div className="border-t border-gray-800 pt-3 text-center">
-            <p className="text-xs text-gray-400">
-              Already have credentials?
-              <span
-                onClick={() => navigate("/login")}
-                className="text-cyan-300 ml-1 cursor-pointer hover:underline"
-              >
-                Login
-              </span>
-            </p>
+            <button
+              onClick={handleSignup}
+              disabled={loading}
+              className="mt-2 py-3 rounded-md bg-gradient-to-r from-cyan-400 to-cyan-600 text-black font-bold tracking-wide 
+              shadow-[0_0_20px_rgba(0,255,255,0.4)]
+              hover:shadow-[0_0_30px_rgba(0,255,255,0.7)]
+              hover:scale-[1.03] active:scale-[0.97] transition-all"
+            >
+              {loading ? "..." : "Continue"}
+            </button>
           </div>
-        </div>
+        )}
 
-        {/* SMALL INFO CARDS */}
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <div className="bg-white/5 border border-cyan-400/10 p-3 rounded-lg flex gap-2">
-            <div className="w-7 h-7 bg-cyan-400/20 flex items-center justify-center rounded-full">
-              🛡️
+        {/* OTP */}
+        {step === "otp" && (
+          <div className="flex flex-col gap-5">
+            <div className="flex justify-between gap-2">
+              {otp.map((val, i) => (
+                <input
+                  key={i}
+                  id={`otp-${i}`}
+                  value={val}
+                  maxLength={1}
+                  onChange={(e) => handleOtpChange(e.target.value, i)}
+                  className="w-12 h-14 text-center text-xl font-bold bg-black border border-gray-700 rounded-md text-cyan-300 focus:border-cyan-400 outline-none"
+                />
+              ))}
             </div>
-            <div>
-              <p className="text-[8px] uppercase text-gray-400">Encrypted</p>
-              <p className="text-[9px]">AES-256</p>
-            </div>
-          </div>
 
-          <div className="bg-white/5 border border-cyan-400/10 p-3 rounded-lg flex gap-2">
-            <div className="w-7 h-7 bg-cyan-400/20 flex items-center justify-center rounded-full">
-              ⚡
-            </div>
-            <div>
-              <p className="text-[8px] uppercase text-gray-400">Latency</p>
-              <p className="text-[9px]">0.4ms</p>
-            </div>
+            <button
+              onClick={handleOtp}
+              disabled={loading}
+              className="py-3 rounded-md border border-cyan-400 text-cyan-300 font-bold tracking-wide
+              shadow-[0_0_15px_rgba(0,255,255,0.2)]
+              hover:bg-cyan-400/10 hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]
+              hover:scale-[1.03] active:scale-[0.97] transition-all"
+            >
+              {loading ? "..." : "Verify"}
+            </button>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
