@@ -130,20 +130,26 @@ export default function Todos() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0e0e0e] text-white px-4 py-8 flex justify-center">
-      <div className="w-full max-w-3xl">
+    <div className="min-h-screen bg-[#0e0e0e] text-white flex justify-center px-4 py-10 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute w-[500px] h-[500px] bg-cyan-400 blur-[140px] opacity-20 top-[-100px] left-[-100px]" />
+      <div className="absolute w-[400px] h-[400px] bg-blue-500 blur-[140px] opacity-20 bottom-[-100px] right-[-100px]" />
+
+      <div className="w-full max-w-4xl z-10">
         {/* HEADER */}
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold">
-            LUMINA <span className="text-cyan-400">Todos</span>
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-black tracking-tight">
+            TASK <span className="text-cyan-400">BOARD</span>
           </h1>
-          <p className="text-gray-400 mt-2 text-sm md:text-base">
-            Your productivity hub is live ⚡
+
+          <p className="text-gray-400 mt-2">
+            Welcome back,{" "}
+            <span className="text-cyan-300 font-semibold">Shiyan</span> 🚀
           </p>
 
           <button
             onClick={handleLogout}
-            className="mt-4 text-sm text-red-400 hover:text-red-300 cursor-pointer"
+            className="mt-3 text-sm text-red-400 hover:text-red-300 cursor-pointer"
           >
             Logout
           </button>
@@ -160,9 +166,9 @@ export default function Todos() {
 
           <button
             onClick={handleAdd}
-            className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-6 py-3 font-bold rounded-xl cursor-pointer hover:scale-105 active:scale-95 transition"
+            className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-6 py-3 font-bold rounded-xl cursor-pointer hover:scale-105 active:scale-95 transition shadow-[0_0_20px_rgba(0,255,255,0.2)]"
           >
-            {editId ? "Update" : "Add"}
+            {editId ? "Update Task" : "Add Task"}
           </button>
         </div>
 
@@ -180,20 +186,20 @@ export default function Todos() {
             >
               <p className="text-white text-lg break-words">{t.text}</p>
 
-              <div className="flex justify-end gap-4 mt-4">
+              <div className="flex justify-end gap-3 mt-4">
                 <button
                   onClick={() => {
                     setText(t.text);
                     setEditId(t._id);
                   }}
-                  className="text-cyan-400 hover:text-cyan-300 text-sm cursor-pointer transition"
+                  className="px-3 py-1 text-xs font-bold uppercase tracking-widest text-cyan-400 hover:text-cyan-300 cursor-pointer transition"
                 >
                   Edit
                 </button>
 
                 <button
                   onClick={() => handleDelete(t._id)}
-                  className="text-red-400 hover:text-red-300 text-sm cursor-pointer transition"
+                  className="px-3 py-1 text-xs font-bold uppercase tracking-widest text-red-400 hover:text-red-300 cursor-pointer transition"
                 >
                   Delete
                 </button>
@@ -203,8 +209,8 @@ export default function Todos() {
         </div>
 
         {!loading && todos.length === 0 && (
-          <p className="text-gray-500 mt-8 text-center">
-            No tasks yet — start building 🚀
+          <p className="text-gray-500 mt-10 text-center">
+            No tasks yet, Shiyan — start building ⚡
           </p>
         )}
       </div>
