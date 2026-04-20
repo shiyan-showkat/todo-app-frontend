@@ -26,6 +26,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  // ✅ AUTH CHECK ON LOAD
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -41,6 +42,7 @@ export default function Login() {
 
           if (!refresh.ok) {
             navigate("/login");
+            return;
           }
 
           res = await fetch(`${API}/api/v1/me`, {
@@ -48,15 +50,18 @@ export default function Login() {
           });
         }
 
-        if (res.ok) navigate("/todos");
+        if (res.ok) {
+          navigate("/todos");
+        }
       } catch {
         navigate("/login");
       }
     };
 
     checkAuth();
-  }, []);
+  }, [navigate]);
 
+  // ✅ LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -86,14 +91,18 @@ export default function Login() {
     setLoading(false);
   };
 
-  setShowForgot(true);
-  setStep("email");
-  setForgotEmail("");
-  setOtp("");
-  setNewPassword("");
-  setError("");
-  setMessage("");
+  // ✅ OPEN FORGOT MODAL (FIXED)
+  const openForgot = () => {
+    setShowForgot(true);
+    setStep("email");
+    setForgotEmail("");
+    setOtp("");
+    setNewPassword("");
+    setError("");
+    setMessage("");
+  };
 
+  // ✅ SEND OTP
   const sendOtp = async () => {
     setOtpLoading(true);
     setError("");
@@ -120,6 +129,7 @@ export default function Login() {
     setOtpLoading(false);
   };
 
+  // ✅ VERIFY OTP
   const verifyOtp = async () => {
     setVerifyLoading(true);
     setError("");
@@ -146,6 +156,7 @@ export default function Login() {
     setVerifyLoading(false);
   };
 
+  // ✅ RESET PASSWORD
   const resetPassword = async () => {
     setResetLoading(true);
     setError("");
@@ -176,97 +187,69 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] relative overflow-hidden text-white">
-      {/* Glow Orbs */}
-      <div className="absolute w-[600px] h-[600px] bg-cyan-400 blur-[120px] opacity-20 top-[-200px] left-[-100px] rounded-full" />
-      <div className="absolute w-[500px] h-[500px] bg-cyan-300 blur-[120px] opacity-20 bottom-[-150px] right-[-50px] rounded-full" />
-
-      {/* CARD */}
+    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] text-white relative">
       <div className="w-full max-w-[440px] z-10">
-        <div className="bg-[#262625]/40 backdrop-blur-2xl border border-cyan-400/10 p-10 rounded-lg shadow-2xl relative">
-          {/* Header */}
-          <div className="mb-10 text-center">
-            <h1 className="text-5xl font-extrabold bg-gradient-to-b from-white to-cyan-300 bg-clip-text text-transparent mb-4">
-              Initialize
-            </h1>
-            <p className="text-gray-400 text-xs uppercase tracking-widest">
-              Secured Access Required
-            </p>
+        <div className="bg-[#262625]/40 backdrop-blur-2xl border border-cyan-400/10 p-10 rounded-lg">
+          {/* HEADER */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-cyan-300">Login</h1>
+            <p className="text-gray-400 text-xs mt-2">Secure Access</p>
           </div>
 
           {/* FORM */}
-          <form onSubmit={handleLogin} className="space-y-6">
-            {/* Email */}
-            <div>
-              <label className="text-[10px] uppercase text-gray-400">
-                Identity
-              </label>
-              <div className="relative mt-2">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2">
-                  🔐
-                </span>
-                <input
-                  className="w-full pl-12 pr-4 py-3 bg-black border border-gray-700 rounded text-sm"
-                  placeholder="USER_ID"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
+          <form onSubmit={handleLogin} className="space-y-5">
+            {/* EMAIL */}
+            <input
+              placeholder="Email"
+              className="w-full p-3 bg-black border border-gray-700 rounded"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            {/* PASSWORD */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                className="w-full p-3 bg-black border border-gray-700 rounded"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 cursor-pointer"
+              >
+                {showPassword ? "🙈" : "👁"}
+              </span>
             </div>
 
-            {/* Password */}
-            <div>
-              <label className="text-[10px] uppercase text-gray-400">
-                Encryption Key
-              </label>
-              <div className="relative mt-2">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2">
-                  🔒
-                </span>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="w-full pl-12 pr-12 py-3 bg-black border border-gray-700 rounded text-sm"
-                  placeholder="••••••••"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
-                >
-                  {showPassword ? "🙈" : "👁"}
-                </span>
-              </div>
-            </div>
-
-            {/* Button */}
-            <button className="w-full border-2 border-cyan-400 text-cyan-300 py-4 text-xs font-bold tracking-widest hover:bg-cyan-400/10 transition cursor-pointer">
-              {loading ? "Loading..." : "Authorize Login"}
+            <button className="w-full border border-cyan-400 text-cyan-300 py-3">
+              {loading ? "Loading..." : "Login"}
             </button>
           </form>
 
-          {/* Forgot */}
-          <div className="mt-8 text-center">
+          {/* LINKS */}
+          <div className="text-center mt-6">
             <p
               onClick={openForgot}
-              className="text-xs text-cyan-300 cursor-pointer"
+              className="text-cyan-300 text-xs cursor-pointer"
             >
               Forgot Password?
             </p>
 
-            {/* 🔥 ADDED SIGNUP LINK */}
-            <p className="text-xs text-gray-400 mt-3">
-              New here?{" "}
+            <p className="text-gray-400 text-xs mt-3">
+              New user?{" "}
               <span
                 onClick={() => navigate("/signup")}
-                className="text-cyan-300 cursor-pointer hover:underline"
+                className="text-cyan-300 cursor-pointer"
               >
-                Create Account
+                Signup
               </span>
             </p>
           </div>
 
-          {error && <p className="text-red-400 mt-4 text-center">{error}</p>}
+          {error && <p className="text-red-400 text-center mt-4">{error}</p>}
           {message && (
-            <p className="text-green-400 mt-4 text-center">{message}</p>
+            <p className="text-green-400 text-center mt-4">{message}</p>
           )}
         </div>
       </div>
@@ -274,13 +257,13 @@ export default function Login() {
       {/* FORGOT MODAL */}
       <AnimatePresence>
         {showForgot && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/90 z-50">
-            <div className="bg-[#262625]/40 backdrop-blur-xl border border-cyan-400/10 p-6 rounded-lg w-[350px]">
+          <div className="fixed inset-0 flex items-center justify-center bg-black/90">
+            <div className="bg-[#262625] p-6 w-[350px] rounded">
               {step === "email" && (
                 <>
                   <input
                     placeholder="Email"
-                    className="w-full p-2 bg-black text-white"
+                    className="w-full p-2 bg-black"
                     onChange={(e) => setForgotEmail(e.target.value)}
                   />
                   <button
@@ -296,7 +279,7 @@ export default function Login() {
                 <>
                   <input
                     placeholder="OTP"
-                    className="w-full p-2 bg-black text-white"
+                    className="w-full p-2 bg-black"
                     onChange={(e) => setOtp(e.target.value)}
                   />
                   <button
@@ -312,7 +295,7 @@ export default function Login() {
                 <>
                   <input
                     placeholder="New Password"
-                    className="w-full p-2 bg-black text-white"
+                    className="w-full p-2 bg-black"
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <button
