@@ -9,6 +9,8 @@ export default function Signup() {
   const [step, setStep] = useState("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const [otp, setOtp] = useState(["", "", "", ""]);
 
   const [loading, setLoading] = useState(false);
@@ -93,7 +95,6 @@ export default function Signup() {
     }
   };
 
-  // ================= UI =================
   return (
     <div className="min-h-screen flex items-center justify-center relative bg-[#0e0e0e] text-white overflow-hidden">
       {/* Background */}
@@ -108,9 +109,9 @@ export default function Signup() {
           {error && <p className="text-red-400 text-sm">{error}</p>}
           {success && <p className="text-green-400 text-sm">{success}</p>}
 
-          {/* ================= SIGNUP STEP ================= */}
+          {/* ================= SIGNUP ================= */}
           {step === "signup" && (
-            <section className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6">
               <div>
                 <h2 className="text-2xl font-semibold">Create Identity</h2>
                 <p className="text-gray-400 text-sm">
@@ -119,49 +120,47 @@ export default function Signup() {
               </div>
 
               {/* Email */}
-              <div>
-                <label className="text-xs text-gray-400 uppercase">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  placeholder="name@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 w-full bg-black border border-gray-700 px-4 py-3 rounded-md text-sm focus:border-cyan-400 outline-none"
-                />
-              </div>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-black border border-gray-700 px-4 py-3 rounded-md text-sm focus:border-cyan-400 outline-none"
+              />
 
-              {/* Password */}
-              <div>
-                <label className="text-xs text-gray-400 uppercase">
-                  Access Key
-                </label>
+              {/* Password with Eye */}
+              <div className="relative">
                 <input
-                  type="password"
-                  placeholder="••••••••"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-2 w-full bg-black border border-gray-700 px-4 py-3 rounded-md text-sm focus:border-cyan-400 outline-none"
+                  className="w-full bg-black border border-gray-700 px-4 py-3 pr-10 rounded-md text-sm focus:border-cyan-400 outline-none"
                 />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                >
+                  {showPassword ? "🙈" : "👁"}
+                </span>
               </div>
 
               {/* Button */}
               <button
                 onClick={handleSignup}
                 disabled={loading}
-                className="mt-4 py-4 rounded-xl bg-gradient-to-r from-cyan-300 to-cyan-500 text-black font-bold tracking-widest
+                className="py-4 rounded-xl bg-gradient-to-r from-cyan-300 to-cyan-500 text-black font-bold tracking-widest cursor-pointer
                 shadow-[0_0_25px_rgba(0,255,255,0.4)]
                 hover:scale-[1.03] active:scale-[0.97] transition-all"
               >
                 {loading ? "..." : "Create Account"}
               </button>
-            </section>
+            </div>
           )}
 
-          {/* ================= OTP STEP ================= */}
+          {/* ================= OTP ================= */}
           {step === "otp" && (
-            <section className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6">
               <h2 className="text-xl font-semibold text-center">Enter OTP</h2>
 
               <div className="flex justify-between gap-2">
@@ -180,12 +179,12 @@ export default function Signup() {
               <button
                 onClick={handleOtp}
                 disabled={loading}
-                className="py-3 rounded-md border border-cyan-400 text-cyan-300 font-bold tracking-wide
+                className="py-3 rounded-md border border-cyan-400 text-cyan-300 font-bold cursor-pointer
                 hover:bg-cyan-400/10 transition-all"
               >
                 {loading ? "..." : "Verify"}
               </button>
-            </section>
+            </div>
           )}
 
           {/* Footer */}
