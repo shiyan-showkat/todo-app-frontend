@@ -39,7 +39,9 @@ export default function Login() {
             credentials: "include",
           });
 
-          if (!refresh.ok) return;
+          if (!refresh.ok) {
+            navigate("/login");
+          }
 
           res = await fetch(`${API}/api/v1/me`, {
             credentials: "include",
@@ -47,7 +49,9 @@ export default function Login() {
         }
 
         if (res.ok) navigate("/todos");
-      } catch {}
+      } catch {
+        navigate("/login");
+      }
     };
 
     checkAuth();
