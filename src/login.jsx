@@ -26,7 +26,6 @@ export default function Login() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // ✅ AUTH CHECK ON LOAD
   useEffect(() => {
     const checkAuth = async () => {
       try {
