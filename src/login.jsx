@@ -26,6 +26,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  // ✅ AUTH CHECK ON LOAD
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -39,19 +40,14 @@ export default function Login() {
             credentials: "include",
           });
 
-          if (!refresh.ok) {
-            navigate("/login");
-            return;
-          }
+          if (!refresh.ok) return navigate("/login");
 
           res = await fetch(`${API}/api/v1/me`, {
             credentials: "include",
           });
         }
 
-        if (res.ok) {
-          navigate("/todos");
-        }
+        if (res.ok) navigate("/todos");
       } catch {
         navigate("/login");
       }
@@ -81,7 +77,7 @@ export default function Login() {
       if (!res.ok) setError(data.message);
       else {
         setMessage("Welcome back 🚀");
-        setTimeout(() => navigate("/todos"), 600);
+        setTimeout(() => navigate("/todos"), 700);
       }
     } catch {
       setError("Login failed");
@@ -90,7 +86,7 @@ export default function Login() {
     setLoading(false);
   };
 
-  // ✅ OPEN FORGOT MODAL (FIXED)
+  // ✅ OPEN FORGOT (FIXED)
   const openForgot = () => {
     setShowForgot(true);
     setStep("email");
@@ -101,11 +97,10 @@ export default function Login() {
     setMessage("");
   };
 
-  // ✅ SEND OTP
+  // SEND OTP
   const sendOtp = async () => {
     setOtpLoading(true);
     setError("");
-    setMessage("");
 
     try {
       const res = await fetch(`${API}/api/v1/forgot-otp`, {
@@ -128,11 +123,9 @@ export default function Login() {
     setOtpLoading(false);
   };
 
-  // ✅ VERIFY OTP
+  // VERIFY OTP
   const verifyOtp = async () => {
     setVerifyLoading(true);
-    setError("");
-    setMessage("");
 
     try {
       const res = await fetch(`${API}/api/v1/verify-forgot-otp`, {
@@ -155,11 +148,9 @@ export default function Login() {
     setVerifyLoading(false);
   };
 
-  // ✅ RESET PASSWORD
+  // RESET PASSWORD
   const resetPassword = async () => {
     setResetLoading(true);
-    setError("");
-    setMessage("");
 
     try {
       const res = await fetch(`${API}/api/v1/reset-password`, {
@@ -186,21 +177,30 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] text-white relative">
+    <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] relative overflow-hidden text-white">
+      {/* GLOW BACKGROUND (same as signup) */}
+      <div className="absolute w-[600px] h-[600px] bg-cyan-400 blur-[120px] opacity-20 top-[-200px] left-[-100px] rounded-full" />
+      <div className="absolute w-[500px] h-[500px] bg-cyan-300 blur-[120px] opacity-20 bottom-[-150px] right-[-50px] rounded-full" />
+
+      {/* CARD */}
       <div className="w-full max-w-[440px] z-10">
-        <div className="bg-[#262625]/40 backdrop-blur-2xl border border-cyan-400/10 p-10 rounded-lg">
+        <div className="bg-[#262625]/40 backdrop-blur-2xl border border-cyan-400/10 p-10 rounded-lg shadow-2xl">
           {/* HEADER */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-cyan-300">Login</h1>
-            <p className="text-gray-400 text-xs mt-2">Secure Access</p>
+          <div className="text-center mb-10">
+            <h1 className="text-5xl font-extrabold bg-gradient-to-b from-white to-cyan-300 bg-clip-text text-transparent">
+              Initialize
+            </h1>
+            <p className="text-gray-400 text-xs uppercase tracking-widest mt-2">
+              Secure Login Access
+            </p>
           </div>
 
           {/* FORM */}
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-6">
             {/* EMAIL */}
             <input
-              placeholder="Email"
-              className="w-full p-3 bg-black border border-gray-700 rounded"
+              className="w-full p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400"
+              placeholder="USER_ID"
               onChange={(e) => setEmail(e.target.value)}
             />
 
@@ -208,8 +208,8 @@ export default function Login() {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className="w-full p-3 bg-black border border-gray-700 rounded"
+                className="w-full p-3 bg-black border border-gray-700 rounded text-sm outline-none focus:border-cyan-400 pr-12"
+                placeholder="Encryption Key"
                 onChange={(e) => setPassword(e.target.value)}
               />
 
@@ -221,31 +221,33 @@ export default function Login() {
               </span>
             </div>
 
-            <button className="w-full border border-cyan-400 text-cyan-300 py-3">
-              {loading ? "Loading..." : "Login"}
+            {/* BUTTON */}
+            <button className="w-full border-2 border-cyan-400 text-cyan-300 py-4 text-xs font-bold tracking-widest hover:bg-cyan-400/10 transition cursor-pointer">
+              {loading ? "Loading..." : "Authorize Login"}
             </button>
           </form>
 
           {/* LINKS */}
-          <div className="text-center mt-6">
+          <div className="mt-8 text-center text-xs">
             <p
               onClick={openForgot}
-              className="text-cyan-300 text-xs cursor-pointer"
+              className="text-cyan-300 cursor-pointer hover:underline"
             >
               Forgot Password?
             </p>
 
-            <p className="text-gray-400 text-xs mt-3">
-              New user?{" "}
+            <p className="text-gray-400 mt-3">
+              New here?{" "}
               <span
                 onClick={() => navigate("/signup")}
-                className="text-cyan-300 cursor-pointer"
+                className="text-cyan-300 cursor-pointer hover:underline"
               >
-                Signup
+                Create Account
               </span>
             </p>
           </div>
 
+          {/* MESSAGES */}
           {error && <p className="text-red-400 text-center mt-4">{error}</p>}
           {message && (
             <p className="text-green-400 text-center mt-4">{message}</p>
@@ -256,18 +258,18 @@ export default function Login() {
       {/* FORGOT MODAL */}
       <AnimatePresence>
         {showForgot && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/90">
-            <div className="bg-[#262625] p-6 w-[350px] rounded">
+          <div className="fixed inset-0 flex items-center justify-center bg-black/90 z-50">
+            <div className="bg-[#262625] p-6 w-[350px] rounded-lg border border-cyan-400/20">
               {step === "email" && (
                 <>
                   <input
                     placeholder="Email"
-                    className="w-full p-2 bg-black"
+                    className="w-full p-2 bg-black text-white"
                     onChange={(e) => setForgotEmail(e.target.value)}
                   />
                   <button
                     onClick={sendOtp}
-                    className="w-full mt-3 bg-cyan-400 p-2"
+                    className="w-full mt-3 bg-cyan-400 p-2 cursor-pointer"
                   >
                     {otpLoading ? "Sending..." : "Send OTP"}
                   </button>
@@ -278,12 +280,12 @@ export default function Login() {
                 <>
                   <input
                     placeholder="OTP"
-                    className="w-full p-2 bg-black"
+                    className="w-full p-2 bg-black text-white"
                     onChange={(e) => setOtp(e.target.value)}
                   />
                   <button
                     onClick={verifyOtp}
-                    className="w-full mt-3 bg-green-400 p-2"
+                    className="w-full mt-3 bg-green-400 p-2 cursor-pointer"
                   >
                     {verifyLoading ? "Checking..." : "Verify"}
                   </button>
@@ -294,12 +296,12 @@ export default function Login() {
                 <>
                   <input
                     placeholder="New Password"
-                    className="w-full p-2 bg-black"
+                    className="w-full p-2 bg-black text-white"
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <button
                     onClick={resetPassword}
-                    className="w-full mt-3 bg-blue-400 p-2"
+                    className="w-full mt-3 bg-blue-400 p-2 cursor-pointer"
                   >
                     {resetLoading ? "Updating..." : "Reset"}
                   </button>
@@ -308,7 +310,7 @@ export default function Login() {
 
               <button
                 onClick={() => setShowForgot(false)}
-                className="w-full mt-4 text-gray-300"
+                className="w-full mt-4 text-gray-300 cursor-pointer"
               >
                 Close
               </button>
