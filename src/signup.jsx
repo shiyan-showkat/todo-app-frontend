@@ -57,8 +57,10 @@ export default function Signup() {
     try {
       const res = await fetch(`${API}/api/v1/verifyotp`, {
         method: "POST",
+
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: finalOtp }),
+        credentials: "include",
       });
 
       const data = await res.json();
